@@ -62,101 +62,6 @@
 			</tbody>
 		</table>
 	</div>
-    <div id="topRiskAsset" style="font-size:14px;height:250px;position:absolute">
-        <div style="width:140px;float:left;color:#28E1F4;font-weight:900">TOP5高危资产</div>
-        <div id="topRiskAssetMore" style="float:left;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
-	</div>
-	<div id="attckDetailPanel" style="width: 200px; margin-left: 10px;">
-        <div style="font-size:14px;color:white;font-weight:900;position:absolute">
-            <div style="width:950px;float:left;margin-top:5px;color:#28E1F4">威胁事件列表</div>
-            <div id="alarmTableMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
-	   </div>
-    </div>
-    <div id="toolbarButtonDiv" onclick="operateToolBar()" style="cursor:pointer;margin-left:1px;position:absolute;background:url('./image/toolbar.png');width:35px;height:35px;background-repeat:no-repeat;background-size:100% 100%;">
-	</div>
-	<div id="toolbarDiv" style="margin-left:13px;position: absolute;background:url( './image/toolbar_image.png');width:1200px;height:40px;background-repeat:no-repeat;background-size:100% 100%;">
-		 <table style="margin-left:13px;">
-			<tbody>
-				<tr>
-					<td> <img id="allthreat_enable"  src="./image/allthreat_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="allthreat_disable"  src="./image/allthreat_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;" >&nbsp;全网威胁等级</span></td>
-					<td> <img id="u616_img"  src="./image/topasset_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="u616_img"  src="./image/topasset_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;" >&nbsp;TOP高危资产</span></td>
-					<td> <img id="u616_img"  src="./image/threatregion_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="u616_img"  src="./image/threatregion_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;受威胁区域排行</span></td>
-					<td> <img id="u616_img"  src="./image/threatcountry_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="u616_img"  src="./image/threatcountry_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;威胁源国家排行</span></td>
-					<td> <img id="u616_img"  src="./image/threatevent_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="u616_img"  src="./image/threatevent_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;威胁事件列表</span></td>
-					<td> <img id="u616_img"  src="./image/toolbar_line.png" tabindex="0" style="cursor: pointer;"></td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;">&nbsp;威胁等级</span></td>
-					<td> <img id="u616_img"  src="./image/higher_toolbar.png" tabindex="0">
-					     <img id="u616_img"  src="./image/high_toolbar.png" tabindex="0">
-					     <img id="u616_img"  src="./image/middle_toolbar.png" tabindex="0">
-					     <img id="u616_img"  src="./image/low_toolbar.png" tabindex="0">
-					     <img id="u616_img"  src="./image/lower_toolbar.png" tabindex="0"></td>
-					<td> <img id="u616_img"  src="./image/toolbar_line.png" tabindex="0" style="cursor: pointer;"></td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;静态攻击线</span></td>
-					<td> <img id="u616_img"  src="./image/staticline_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="u616_img"  src="./image/staticline_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;动态攻击线</span></td>
-					<td> <img id="u616_img"  src="./image/dynamicline_enable.png" tabindex="0" style="cursor: pointer;">
-						 <img id="u616_img"  src="./image/dynamicline_disable.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-				</tr>
-			</tbody>
-		 </table>
-	</div>
-	<div id="changeZoomDiv" style="margin-left:1px;position:absolute;width:35px;height:135px;">
-		<table style="margin-left:1px;">
-			<tbody>
-				<tr>
-					<td > <img id="fullscreen" onclick="toFullscreen('fullscreen')" src="./image/fullscreen.png" tabindex="0" style="cursor: pointer;">
-						 <img id="exitfullscreen" onclick="toFullscreen('exitfullscreen')" src="./image/exitfullscreen.png" tabindex="0" style="cursor: pointer;display:none;">
-					</td>
-				</tr>
-				<tr>
-					<td> <a target="_self" href="./globlemap.html">
-						 	<img id="tochina" onclick="changeMap('tochina')" src="./image/toglobal.png" tabindex="0" style="cursor: pointer;">
-						 </a>
-					</td>
-				</tr>
-				<tr>
-					<td> <img id="zoomin" onclick="zoomChange('zoomin');" src="./image/zoomin.png" tabindex="0" style="cursor: pointer;">
-					</td>
-				</tr>
-				<tr>
-					<td> <img id="zoomout" onclick="zoomChange('zoomout');" src="./image/zoomout.png" tabindex="0" style="cursor: pointer;">
-					</td>
-				</tr>
-			</tbody>
-		 </table>
-	</div>
-	<div id="topRiskCountry" style="height:250px;width:500px">
-         <div style="font-size:14px;color:white;font-weight:900;position:absolute">
-             <div style="float:left;margin-top:6px"><img src="./image/threatcountry_enable.png"/>&nbsp</div>
-             <div style="width:150px;float:left;margin-top:5px;color:#28E1F4">威胁源国家排行</div>
-             <div id="topRiskCountryMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
-         </div>
-	</div>
-     <div id="topRiskRegion" style="height:250px">
-         <div style="font-size:14px;color:white;font-weight:900;position:absolute">
-             <div style="float:left;margin-top:6px"><img src="./image/threatregion_enable.png"/>&nbsp</div>
-             <div style="width:150px;float:left;margin-top:5px;color:#28E1F4">受威胁区域排行</div>
-             <div id="topRiskRegionMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
-         </div>
-	</div>
 	<script type="text/javascript" src="./table/angular.min.js"></script>
 	<script type="text/javascript" src="./table/esight.ringchart.js"></script>
 	<script type="text/javascript" src="./echarts/echarts-all.js"></script>
@@ -351,10 +256,6 @@
 			 initNetWork();
 			 //showRegionView();
 			 loadMapData ();
-			 // initThreatLevel();
-			 // initTopRiskAsset();
-			 // initTopRiskCountry();
-			 // initTopRiskRegion();
 			 // initTable();
 			 initContinent();
 			//view.appendChild(div);
@@ -382,139 +283,6 @@
 		$("#refreshTimeValue").html(nowTime);
 	}
 
-		function initThreatLevel()
-		{
-			  document.body.appendChild(threatLevelView);
-			  threatLevelNetWork.adjustBounds({x:1075+390,y:8,width:210, height:258});
-			  threatLevelNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
-			  threatLevelNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-			  var div = document.getElementById("threatLevelPanel");
-			  threatLevelView.appendChild(div);
-		}
-		function initTopRiskAsset()
-		{
-		  document.body.appendChild(topRiskAssetBoxView);
-		  topRiskAssetBoxNetWork.adjustBounds({x:1075+390,y:310,width:210, height:230});
-		  topRiskAssetBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
-		  topRiskAssetBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-		  var div = document.getElementById("topRiskAsset");
-
-		  for(var i=5;i>=1;i--)
-		  {
-			 var node = new twaver.Node();
-			  node.setImage('gradient1');
-			  node.setClient('c_width',i*40);
-			  node.setClient('c_name',"region"+i);
-			  node.setLocation(10,10+(6-i)*38);
-			  node.setMovable(false);
-			  topRiskAssetBox.add(node);
-			  var node1 = new twaver.Node();
-			  node1.setImage('gradient2');
-			  node1.setLocation(10,20+(6-i)*38);
-			  node1.setClient('c_width',i*40*0.75);
-			  node1.setClient("c_color",getColor(i*20));
-			  node1.setClient('c_name',"region"+i);
-			  node1.setClient('c_score',i*20);
-			  node1.setMovable(false);
-			  topRiskAssetBox.add(node1);
-		  }
-		  topRiskAssetBoxView.appendChild(div);
-
-		}
-
-		function initTopRiskCountry()
-		{
-		  document.body.appendChild(topRiskCountryBoxView);
-		  topRiskCountryBoxNetWork.adjustBounds({x:viewBounds.width-1400,y:viewBounds.height-250,width:235, height:258});
-		  topRiskCountryBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
-		  topRiskCountryBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-		  var div = document.getElementById("topRiskCountry");
-
-		  var j = 5;
-		  var highestCountry = 500;
-		  topRiskCountryBoxNetWork.getView().addEventListener('mousedown', function (e) { var point = topRiskCountryBoxNetWork.getLogicalPoint(e); console.log(point); });
-		  for(var i=1;i<=5;i++)
-		  {
-			  var eventNub = (6-i)*100;
-			  var leth = (eventNub/highestCountry) *100;
-              var node1 = new twaver.Node();
-			   node1.setImage('gradient4');
-			   //node1.setLocation((i-1)*45+15,220-40*j);
-			   node1.setLocation((i-1)*45+15,210-leth*1.8);
-			   node1.setClient('c_height',leth*1.8);
-               node1.setClient('c_color',colors[5-i]);
-			   node1.setClient('c_score',leth);
-			  node1.setClient('c_name',countrys[i-1]);
-			  node1.setMovable(false);
-			  topRiskCountryBox.add(node1);
-			 var node = new twaver.Node();
-			  node.setImage('gradient3');
-			  node.setClient('c_height',40*j);
-			  node.setClient('c_name',countrys[i-1]);
-			  node.setLocation((i-1)*45+15,230);
-			  node.setMovable(false);
-			  topRiskCountryBox.add(node);
-              j--;
-
-		  }
-		  topRiskCountryBoxView.appendChild(div);
-		}
-
-		function initTopRiskRegion()
-		{
-			  document.body.appendChild(topRiskRegionBoxView);
-			  topRiskRegionBoxNetWork.adjustBounds({x:viewBounds.width-1670,y:viewBounds.height-250,width:235, height:258});
-			  topRiskRegionBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
-			  topRiskRegionBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-			  var div = document.getElementById("topRiskRegion");
-
-			var node1 = new twaver.Node();
-			node1.setImage('gradient5');
-			node1.setLocation(55,50);
-			node1.setClient('c_R',40*4);
-			node1.setClient('c_color',colors[4]);
-			node1.setClient('c_name',regions[4]);
-			node1.setClient('c_num',100);
-			topRiskRegionBox.add(node1);
-
-			var node2 = new twaver.Node();
-			node2.setImage('gradient5');
-			node2.setLocation(135,50);
-			node2.setClient('c_R',40*3.5);
-			node2.setClient('c_color',colors[3]);
-			node2.setClient('c_name',regions[3]);
-			node2.setClient('c_num',80);
-			topRiskRegionBox.add(node2);
-
-			var node3 = new twaver.Node();
-			node3.setImage('gradient5');
-			node3.setLocation(150,115);
-			node3.setClient('c_R',40*3);
-			node3.setClient('c_color',colors[2]);
-			node3.setClient('c_name',regions[2]);
-			node3.setClient('c_num',60);
-			topRiskRegionBox.add(node3);
-
-			var node4 = new twaver.Node();
-			node4.setImage('gradient5');
-			node4.setLocation(93,140);
-			node4.setClient('c_R',40*2.8);
-			node4.setClient('c_color',colors[1]);
-			node4.setClient('c_name',regions[1]);
-			node4.setClient('c_num',40);
-			topRiskRegionBox.add(node4);
-
-			var node5 = new twaver.Node();
-			node5.setImage('gradient5');
-			node5.setLocation(40,120);
-			node5.setClient('c_R',40*2.4);
-			node5.setClient('c_color',colors[0]);
-			node5.setClient('c_name',regions[0]);
-			node5.setClient('c_num',20);
-			topRiskRegionBox.add(node5);
-
-			topRiskRegionBoxView.appendChild(div);
-		}
 	var theatNames =["DGA恶意域名访问","外部渗透…+…数据泄露","DGA恶意域名请求","DGA恶意域名请求","端口扫描","PING数据通道","DNS数据通道","HTTP数据通道","恶意文件下载","文件外发","违背关键资产开放端口策略"];
 var assetNames=['172.168.5.1，Hostname="jack.pc",员工"Jack"，工号为“00964691”','感染钓鱼邮件：IP"100.18.21.79"，Hostname="Tom.pc",员工"Tom"，被渗透IP：88.17.21.58,88.18.21.59,88.19.21.60,88.20.21.59,88.21.21.60,89.18.21.79,90.17.21.58被泄露数据IP：88.17.21.1（文件服务器），88.17.21.2（邮件服务器）','172.168.5.2，Hostname="jack.pc",员工"Jack"，工号为“00964693”','172.168.5.3，Hostname="mary.pc",员工"Mary"，工号为“00964694”','172.168.5.5，Hostname="suny.pc",员工"Suny"，工号为“00964695”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','100.168.5.7，Hostname="joy.pc",员工"Joy"，工号为“00964697','100.168.5.8，Hostname="bob.pc",员工"Bob"，工号为“00964697”','100.168.5.9，Hostname="bill.pc",员工"Bill"，工号“00964697”','100.168.5.10，Hostname="dannie.pc",员工"Dannie"，工号为“00964698”','101.168.5.100，Hostname="Fin_dept.pc",资产名称=“财务部服务器”'];
 var srcIp =['"远控IP：195.22.28.199（葡萄牙）195.22.28.198（葡萄牙）195.22.28.197（葡萄牙）195.22.28.196（葡萄牙','恶意邮件钓鱼服务器：38.102.150.27（美国）C&C远控IP：38.102.150.27（美国）104.244.14.252（美国）208.100.26.234（美国）数据泄露接收服务器46.101.184.102(德国)','远控IP：38.102.150.27（美国）104.244.14.252（美国）208.100.26.234（美国）','远控IP:221.8.69.25 (中国长春）','远控IP:221.8.69.25 (中国长春）','扫描者：100.168.5.4（总部）','隐蔽通道接收端IP：8.9.67.2（美国）','隐蔽通道接收端IP：8.9.67.3（美国）','数据接收端IP：8.9.67.4（美国）','恶意文件来源：10.111.1.1（英国）','文件外发接收者：8.9.67.4','文件外发接收者：8.9.67.4','非法访问者：195.22.26.248'];
@@ -1172,7 +940,6 @@ function insertData()
 		   });
 		   resizeNodeLocate();
 		   //var zoomPer = 0.8*(data.width*data.height)/(1680*1050);
-		   //myChart.setOption(option);
 		 // tableDom1.style.width = alarmBoxBounds.width-8;
 		  //tableDom1.style.height = alarmBoxBounds.height - 30;
 	}
