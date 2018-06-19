@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="pragma" content="no-cache">
+<meta charset="UTF-8">
+<title>威胁监控</title>
+<script type="text/javascript" src="./twaver.js"></script>
+<script type="text/javascript" src="./countries.js"></script>
+<script type="text/javascript" src="./FlowLink2.js"></script>
+<script type="text/javascript" src="./randomColor.js"></script>
+<script type="text/javascript" src="./license.js"></script>
+<script type="text/javascript" src="./jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="./table/angular.min.js"></script>
+<script type="text/javascript" src="./table/esight.ringchart.js"></script>
+<script type="text/javascript" src="./regionView.js"></script>
+<script type="text/javascript" src="./threatmap.js"></script>
+<link rel="stylesheet" type="text/css" href="./css/regionmap.css">
+<style>
+div #assetGroupPanel{
+  position:relative;
+  left:10px;
+  top:10px;
+  width:1450px;
+  height:200px;
+  //background:inherit;
+  background-color:rgba(0, 45, 92, 0.317647058823529);
+  box-sizing:border-box;
+  border-width:1px;
+  border-style:solid;
+  border-color:rgba(10, 46, 69, 1);
+  border-radius:0px;
+  -moz-box-shadow:none;
+  -webkit-box-shadow:none;
+  box-shadow:none;
+  color:rgba(8, 8, 8, 0.8);
+}
+
+.userGroupCls
+{
+  position:relative;
+  left:10px;
+  top:30px;
+  width:1450px;
+  height:200px;
+  background-color:rgba(0, 45, 92, 0.317647058823529);
+  box-sizing:border-box;
+  border-width:1px;
+  border-style:solid;
+  border-color:rgba(10, 46, 69, 1);
+  border-radius:0px;
+  -moz-box-shadow:none;
+  -webkit-box-shadow:none;
+  box-shadow:none;
+  color:rgba(8, 8, 8, 0.8);
+}
+
+.assetTableCls
+{
+  position:relative;
+  left:10px;
+  top:16px;
+  width:1450px;
+  height:280px;
+  display:none;
+  background-color:rgba(0, 45, 92, 0.317647058823529);
+  box-sizing:border-box;
+  border-width:1px;
+  border-style:solid;
+  border-color:rgba(10, 46, 69, 1);
+  border-radius:0px;
+  -moz-box-shadow:none;
+  -webkit-box-shadow:none;
+  box-shadow:none;
+  color:rgba(8, 8, 8, 0.8);	
+}
+
+ul
+{
+	position:absolute;
+}
+
+ul,li
+{	
+	
+	list-style-type:none;
+	vertical-align:0;
+}
+
+li
+{
+	position:relative;
+	float:left; 
+	width:140px;
+}
+
+.assetname
+{
+	position:relative;
+	top:5px;
+	width:100%;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	color:#5BDCFB;
+	cursor:default
+}
+
+.arrow-up {  
+    width: 0;   
+    height: 0;   
+	//color : yellow;
+    border-left: 8px solid transparent;  /* 左边框的宽 */  
+    border-right: 8px solid transparent; /* 右边框的宽 */  
+    border-bottom: 8px solid #22C1D4; /* 下边框的长度|高,以及背景色 */  
+	//border-color:yellow;
+    font-size: 0;  
+    line-height: 0;  
+}
+<div class="normal"></div>
+
+</style>
+<script type="text/javascript">
+		var box = new twaver.ElementBox();
+		var network = new twaver.vector.Network(box);
+		var view = network.getView();
+		//TOP资产
+		var topRiskAssetBox = new twaver.ElementBox();
+		var topRiskAssetBoxNetWork = new twaver.vector.Network(topRiskAssetBox);
+		var topRiskAssetBoxView = topRiskAssetBoxNetWork.getView();
+		//表格
+		var alarmBox = new twaver.ElementBox();
+		var alarmBoxNetWork = new twaver.vector.Network(alarmBox);
+		var alarmBoxView = alarmBoxNetWork.getView();
+		var table;
+		var tablePane1;
+		var tableDom1;
+		
+		//区域界面表格
+		var regionAlarmBox = new twaver.ElementBox();
+		var regionAlarmBoxNetWork = new twaver.vector.Network(regionAlarmBox);
+		var regionAlarmBoxView = regionAlarmBoxNetWork.getView();
+		var regionTable = new twaver.controls.Table(regionAlarmBox);
+		var regionTablePane = new twaver.controls.TablePane(regionTable);
+		var regionTableDom = regionTablePane.getView();
+		
+		var assetGroupData = '[{"name":"广东分部服务器组","score":98},{"name":"湖北分部服务器组","score":88},{"name":"湖南分部服务器组","score":79},{"name":"上海分部服务器组","score":78},{"name":"北京分部服务器组","score":68},{"name":"沈阳分部服务器组","score":66},{"name":"广东分部服务器组2","score":58},{"name":"广东分部服务器组3","score":55},{"name":"广东分部服务器组5","score":45},{"name":"广东分部服务器组6","score":37},{"name":"广东分部服务器组7","score":33},{"name":"广东分部服务器组8","score":22},{"name":"广东分部服务器组9","score":12}]';
+		
+		var assetGroupList = JSON.parse(assetGroupData);
+		var assetGroupDataNum = 12;
+		var currentAssetNode;
+		var assetGroupmap = {};
+		
+		var assetPic;
+		var assetPrev;
+		var assetNext;
+		
+		function initAssetGroupImage()
+		{
+			var assetUl = document.getElementById("assetUl");
+			$("#assetUl").css("width",assetGroupList.length*140);
+			<!-- $("#assetUl").append(' <li class=""><img src="./images/asset_group.png" alt=""><div class="assetThreat" style="position:absolute;top:30px;left:40px;cursor:pointer"></div><div class="assetname" title="asda">asdasd</div></li>'); -->
+			for(var i=0;i<assetGroupList.length;i++)
+			{
+				var str = ' <li id="'+assetGroupList[i].name+'" class=""><img src="./images/asset_group.png" alt=""><div class="assetThreat" style="position:absolute;top:30px;left:40px;cursor:pointer"></div>';
+				str += '<div class="assetname" title="'+assetGroupList[i].name+'">'+assetGroupList[i].name+'</div></li>';
+				$("#assetUl").append(str);
+			}
+		}
+		
+		$(document).ready(function()
+		{
+			assetPic = G("assetPic");
+			assetPrev = G("assetPrev");
+			assetNext = G("assetNext");
+			registerImage();
+			initAssetGroupImage();
+			initAssetThreat(true);	
+			initAssetGroupData(true);
+			initRegionTable();
+			
+		});
+
+		function init()
+		{	
+			//initNetwork();
+			//initTopRiskAsset();
+		}
+		function initAssetGroupData(isgroup)
+		{
+			var index = 0;
+			
+			var assetPicUl = assetPic.getElementsByTagName("ul")[0];
+			var assetPicLi = assetPic.getElementsByTagName("li");
+			var liWidth = assetPicLi[0].offsetWidth;
+			assetPrev.onclick = function()
+			{
+				if(index<=0)
+				{
+					//Animate(assetPicUl,{left:0});
+					index=assetGroupDataNum-1;
+					Animate(assetPicUl,{left:-140*index});
+					return;
+				}
+				index--;
+				Animate(assetPicUl,{left:-140*index});
+
+			}
+			assetNext.onclick = function()
+			{
+				if(index>=assetGroupDataNum-1)
+				{
+					Animate(assetPicUl,{left:0});
+					index=0;
+					return;
+				}
+				index++;
+				Animate(assetPicUl,{left:-140*index});
+		
+			}
+			if(!isgroup)
+			{
+				return;
+			}
+			for(var i=0;i<assetPicLi.length;i++)
+			{
+				assetPicLi[i].onclick = function(e)
+				{
+					
+					var tar = e.currentTarget || e.path[1];
+					var sd = $(tar).find("div.assetThreat");
+					//console.log(sd[0]);
+					if(!currentAssetNode || currentAssetNode === tar)
+					{
+						currentAssetNode = tar;
+						var sd1 = assetGroupmap[tar.id];
+						if($("#assetArrowUl").css("display")=="none")
+						{
+							$("#assetArrowUl").css("display","");
+							$("#assetArrowUl").css("left",tar.offsetLeft+40+"px");
+							
+							sd1.setImage("regionImage1");
+						}
+						else
+						{
+							$("#assetArrowUl").css("display","none");
+							sd1.setImage("regionImage2");
+						}
+						
+						queryAssetData();
+					}
+					else
+					{
+						assetGroupmap[currentAssetNode.id].setImage("regionImage2");
+						assetGroupmap[tar.id].setImage("regionImage1");
+						currentAssetNode = tar;
+						$("#assetTable").hide(500);
+						$("#assetArrowUl").css("left",tar.offsetLeft+40+"px");
+						$("#assetArrowUl").css("display","");
+						$("#assetTable").show(500);
+						initTopRiskAsset();
+						initAssetTable();
+						
+					}
+				}
+			}
+			
+		}
+		
+		function initNetwork()
+		{
+		  var div = document.getElementById("assetTable"); 
+		  div.appendChild(view); 
+		 // document.body.appendChild(view);  
+		  var width = 300;
+		  //var height = window.innerHeight;
+		  var height = 150;
+		  viewBounds = {x:0,y:205,width:width, height:height};
+		  network.adjustBounds(viewBounds);
+		  network.getView().style.backgroundColor = 'red';//背景颜色
+		  network.setDragToPan(true);//设置network是否可以拖拽移动
+		  twaver.Styles.setStyle('select.style', 'none');//设置选中的样式
+		  var backImage = new Image();
+		  backImage.src = "./images/image_china.jpg";
+		  //network.setBackgroundImage(backImage);
+		 // network.getCurrentSubNetwork();
+		  //box.setStyle('background.type', 'image');
+		  //box.setStyle('background.image', './images/image_china.jpg');
+		  //box.setStyle('background.image.stretch','tile');
+		 // network.getBackgroundImage();
+		}
+		function initTopRiskAsset()
+		{
+		 // document.body.appendChild(topRiskAssetBoxView);
+		   var div = document.getElementById("topRiskAsset"); 
+		  div.appendChild(topRiskAssetBoxView); 
+		  topRiskAssetBoxNetWork.adjustBounds({x:10,y:10,width:210, height:240});
+		  topRiskAssetBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.0)';//背景颜色
+		  topRiskAssetBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		  //var div = document.getElementById("topRiskAsset");
+		 
+		  for(var i=5;i>=1;i--)
+		  {
+			 var node = new twaver.Node();
+			  node.setImage('gradient1');
+			  node.setClient('c_width',i*40);
+			  node.setClient('c_name',"region"+i);
+			  node.setLocation(10,10+(6-i)*36);
+			  node.setMovable(false);
+			  topRiskAssetBox.add(node);
+			  var node1 = new twaver.Node();
+			  node1.setImage('gradient2');
+			  node1.setLocation(10,20+(6-i)*36);
+			  node1.setClient('c_width',i*40*0.75);
+			  node1.setClient("c_color",getColor(i*20)); 
+			  node1.setClient('c_name',"region"+i);
+			  node1.setClient('c_score',i*20);
+			  node1.setMovable(false);
+			  topRiskAssetBox.add(node1);
+		  }
+		  //topRiskAssetBoxView.appendChild(div);
+ 
+		}
+			
+		function initAssetThreat(isgroup)
+		{
+			$(".assetThreat").each(function(e,val)
+			{
+				//console.log(val);
+			
+			//TOP资产
+			var assetThreatBox = new twaver.ElementBox();
+			var assetThreatNetWork = new twaver.vector.Network(assetThreatBox);
+			var assetThreatBoxView = assetThreatNetWork.getView();
+			//assetThreat1
+		  //var div = document.getElementById("assetThreat1"); 
+		   val.appendChild(assetThreatBoxView); 
+		   assetThreatNetWork.adjustBounds({x:0,y:0,width:50, height:50});
+		   assetThreatNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.0)';//背景颜色
+		   assetThreatNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		   var shape = new twaver.Node();
+			//shape.setBackgroundColor("yellow");
+			shape.s("background.vector.fill.color","yellow");
+			shape.setClient("elementId",true);
+			shape.setClient("c_score",assetGroupList[e].score);
+			var image = isgroup ? "regionImage2" : "regionImage";
+			shape.setImage(image);
+			shape.setLocation(30, 15);
+			shape.setSize(8,8);
+			assetGroupmap[assetGroupList[e].name] = shape;
+			assetThreatBox.add(shape);
+			});
+		}
+
+		function queryAssetData()
+		{
+			//console.log(document.body);
+			var target = $("#assetTable");
+			if(target.css("display")=="none")
+			{
+				$("#assetTable").show(1000);
+				initTopRiskAsset();
+				initAssetTable();
+			}
+			else
+			{
+				$("#assetTable").hide(1000);
+			}
+		}
+		
+		var assetTableDataCahe = [];
+		
+		function deleteTableData(assetTableDataCahe)
+		{
+			for(var i=0;i<assetTableDataCahe.length;i++)
+			{
+				alarmBox.remove(assetTableDataCahe[i]);
+			}
+		}
+		
+		function initAssetTable() {
+			deleteTableData(assetTableDataCahe);
+			for(var i=0;i<=4;i++)
+			{
+				var from1 = new twaver.Node({
+						name: 'from',
+						image:"unvisble",
+						location: {
+							x: 100,
+							y: 100
+						}
+					});
+					from1.s("select.color","red");
+					from1.setClient('height', 55);
+					from1.setClient('font.color', "#2FD6FF");
+					from1.setClient('level', i);
+					from1.setClient('sn', i);
+					from1.setClient('attname', "a"+i);
+					from1.setClient('onthreatip', "1.3.3.3");
+					from1.setClient('onthreatuser', "user"+i);
+					from1.setClient('onthreatregion', "region1");
+					from1.setClient('occtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+					from1.setClient('durtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+					from1.setClient('revtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+					//from1.setClient('operate', new Image());			
+					assetTableDataCahe.push(from1);
+					alarmBox.add(from1);
+			}
+			if(table)
+			{
+				return;
+			}
+			table = new twaver.controls.Table(alarmBox);
+			tablePane1 = new twaver.controls.TablePane(table);
+			tableDom1 = tablePane1.getView();
+			var div = document.getElementById("alarmTableDetail"); 
+			div.appendChild(alarmBoxView);
+
+			alarmBoxNetWork.adjustBounds({x:0,y:0,width:1330, height:230});
+			alarmBoxNetWork.getView().style.backgroundColor = 'rgba(3,11,25,0)';//背景颜色
+			alarmBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+			//var div = document.getElementById("attckDetailPanel");
+			//alarmBoxView.appendChild(div);
+		  //var view = network.getView();
+		  // table.setRowLineColor('rgba(255,0,0,0.5)');attckDetailPanel
+		  var tableHeader = tablePane1.getTableHeader().getView();
+		  var tbHeader = tablePane1.getTableHeader();
+		  tbHeader.setColumnLineColor('black');
+		  tableHeader.style.backgroundColor = 'rgba(34,47,77,0.4)';
+		  tableDom1.style.position = 'relative';
+		  tableDom1.style.bottom = '0px';
+		   tableDom1.style.right = '0px';
+		   tableDom1.style.top = "30px";
+		  tableDom1.style.width = "1020px";
+		  tableDom1.style.height = "220px";
+		  tablePane1.getTableHeader().setHeight(32); 
+		  //tablePane.getView().setHeight(32); 
+		  // tableDom.style.backgroundColor = 'rgba(255,0,0,1)';
+		  // document.body.appendChild(tableDom);select.color setRowLineWidth 
+		  table.setRowHeight(34); //设置行高
+		  table.setRowLineColor("rgba(7,16,33,0.1)"); 
+		  table.setRowLineWidth(0.1); 
+		  table.setEditable(true); 
+		  table.setFocusOnClick (false);
+		  table.isMakeVisibleOnSelected(true); 
+		  
+		  table.getView().onmousedown = null;
+		  alarmBoxView.appendChild(tableDom1);
+		  window.onresize = function () {
+			tablePane1.invalidate();
+		  }
+		  var columwidth = 100;
+		  //序号
+		 createColumn(table, 'SN', 'sn', 'client', 'i',70);
+		 //威胁等级
+		 createColumn(table, '威胁等级', 'threatlevel', 'client', 'i');
+		 //'威胁名称'
+		 createColumn(table, '威胁名称', 'attname', 'client','string',columwidth);
+		 
+		 //'受攻击ip'
+		 createColumn(table, '受威胁IP', 'onthreatip', 'client','string',columwidth);
+		 //'受攻击用户'
+		 createColumn(table, '受威胁用户', 'onthreatuser', 'client','string',columwidth);
+		 //'受攻击区域'
+		 createColumn(table, '受威胁区域', 'onthreatregion', 'client','string',columwidth);
+		 //'威胁源国家/区域'
+		 createColumn(table, '最近发生时间', 'occtime', 'client','string',columwidth);
+		 //'威胁源IP'
+		 createColumn(table, '持续时间', 'durtime', 'client','string',columwidth);
+		 //'第一次发生时间'
+		 createColumn(table, '检测时间', 'revtime', 'client','string',columwidth);
+		 //'状态'
+		 createColumn(table, '处理状态', 'status', 'client','string',columwidth);
+		 //'状态'
+		 createColumn(table, '操作', 'operate', 'accessor','image',70);
+		//威胁等级，威胁名称，受威胁IP 受威胁区域，最近发生时间，持续时间，检测时间，处理状态，操作
+		table.getSelectColor = function() {
+			 return "#235F8A";
+		}
+		table.onCellRendered = function (params) {
+				renderTable(params);	
+			  };
+
+		  table.setMakeVisibleOnSelected(false);
+		  table.getSelectionModel().addSelectionChangeListener(function(e) { 
+
+		});
+		}
+
+		function initRegionTable() {
+			for(var i=0;i<=4;i++)
+			{
+				var from1 = new twaver.Node({
+						name: 'from',
+						image:"unvisble",
+						location: {
+							x: 100,
+							y: 100
+						}
+					});
+					from1.s("select.color","red");
+					from1.setClient('height', 55);
+					from1.setClient('font.color', "#2FD6FF");
+					from1.setClient('level', i);
+					from1.setClient('sn', i);
+					from1.setClient('attname', "a"+i);
+					from1.setClient('onthreatip', "1.3.3.3");
+					from1.setClient('onthreatuser', "user"+i);
+					from1.setClient('onthreatregion', "region1");
+					from1.setClient('occtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+					from1.setClient('durtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+					from1.setClient('revtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+					//from1.setClient('operate', new Image());			
+				
+					regionAlarmBox.add(from1);
+			}
+			
+			var div = document.getElementById("regionAlarmTableDetail"); 
+			div.appendChild(regionAlarmBoxView);
+
+			regionAlarmBoxNetWork.adjustBounds({x:0,y:0,width:1400, height:230});
+			regionAlarmBoxNetWork.getView().style.backgroundColor = 'rgba(3,11,25,0)';//背景颜色
+			regionAlarmBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+			//var div = document.getElementById("attckDetailPanel");
+			//alarmBoxView.appendChild(div);
+		  //var view = network.getView();
+		  // table.setRowLineColor('rgba(255,0,0,0.5)');attckDetailPanel
+		  var tableHeader = regionTablePane.getTableHeader().getView();
+		  var tbHeader = regionTablePane.getTableHeader();
+		  tbHeader.setColumnLineColor('black');
+		  tableHeader.style.backgroundColor = 'rgba(34,47,77,0.4)';
+		  regionTableDom.style.position = 'relative';
+		  regionTableDom.style.bottom = '0px';
+		   regionTableDom.style.right = '0px';
+		   regionTableDom.style.top = "30px";
+		  regionTableDom.style.width = "1400px";
+		  regionTableDom.style.height = "220px";
+		  regionTablePane.getTableHeader().setHeight(32); 
+		  //tablePane.getView().setHeight(32); 
+		  // tableDom.style.backgroundColor = 'rgba(255,0,0,1)';
+		  // document.body.appendChild(tableDom);select.color setRowLineWidth 
+		  regionTable.setRowHeight(34); //设置行高
+		  regionTable.setRowLineColor("rgba(7,16,33,0.1)"); 
+		  regionTable.setRowLineWidth(0.1); 
+		  regionTable.setEditable(true); 
+		  regionTable.setFocusOnClick (false);
+		  regionTable.isMakeVisibleOnSelected(true); 
+		  
+		  regionTable.getView().onmousedown = null;
+		  regionAlarmBoxView.appendChild(regionTableDom);
+		  window.onresize = function () {
+			regionTablePane.invalidate();
+		  }
+		  var columwidth = 150;
+		  //序号
+		 createColumn(regionTable, 'SN', 'sn', 'client', 'i',70);
+		 //威胁等级
+		 createColumn(regionTable, '威胁等级', 'threatlevel', 'client', 'i');
+		 //'威胁名称'
+		 createColumn(regionTable, '威胁名称', 'attname', 'client','string',columwidth);
+		 
+		 //'受攻击ip'
+		 createColumn(regionTable, '受威胁IP', 'onthreatip', 'client','string',columwidth);
+		 //'受攻击用户'
+		 createColumn(regionTable, '受威胁用户', 'onthreatuser', 'client','string',columwidth);
+		 //'受攻击区域'
+		 createColumn(regionTable, '受威胁区域', 'onthreatregion', 'client','string',columwidth);
+		 //'威胁源国家/区域'
+		 createColumn(regionTable, '最近发生时间', 'occtime', 'client','string',columwidth);
+		 //'威胁源IP'
+		 createColumn(regionTable, '持续时间', 'durtime', 'client','string',columwidth);
+		 //'第一次发生时间'
+		 createColumn(regionTable, '检测时间', 'revtime', 'client','string',columwidth);
+		 //'状态'
+		 createColumn(regionTable, '处理状态', 'status', 'client','string',columwidth);
+		 //'状态'
+		 createColumn(regionTable, '操作', 'operate', 'accessor','image',70);
+		//威胁等级，威胁名称，受威胁IP 受威胁区域，最近发生时间，持续时间，检测时间，处理状态，操作
+		regionTable.getSelectColor = function() {
+			 return "#235F8A";
+		}
+		regionTable.onCellRendered = function (params) {
+				renderTable(params);	
+			  };
+
+		  regionTable.setMakeVisibleOnSelected(false);
+		  regionTable.getSelectionModel().addSelectionChangeListener(function(e) { 
+
+		});
+	}
+		
+	function createColumn(table, name, propetyName, propertyType, valueType,width) {
+	  var column = new twaver.Column(name);
+	  column.setName(name);
+	  column.setPropertyName(propetyName);
+	  column.setPropertyType(propertyType);
+	  if (valueType) {
+		column.setValueType(valueType);
+	  }
+	  width && column.setWidth(width);
+	  // column.setFontColor(randomColor());
+	  column.renderHeader = function (div) {
+		var span = document.createElement('span');
+		span.style.whiteSpace = 'nowrap';
+		span.style.verticalAlign = 'middle';
+		span.style.padding = '1px 2px 1px 2px';
+		span.innerHTML = column.getName() ? column.getName() : column.getPropertyName();
+		span.setAttribute('title', span.innerHTML);
+		// span.style.backgroundColor = 'rgba(0,0,0,0)';
+		span.style.font = 'bold 12px Helvetica';
+		div.style.textAlign = 'center';
+		div.style.color = '#00AAFF';
+		div.style.backgroundColor = 'rgba(0,0,0,0)';
+		div.appendChild(span);
+	  };
+
+	  table.getColumnBox().add(column);
+	  return column;
+	}	
+
+	function changeToAsset()
+	{
+		$("#assetUl").empty();
+		$("#assetTable").css("display","none");
+		$("#assetArrowUl").css("display","none");
+		var assetUl = document.getElementById("assetUl");
+		$("#assetUl").css("width",assetGroupList.length*140);
+		<!-- $("#assetUl").append(' <li class=""><img src="./images/asset.png" alt=""><div class="assetThreat" style="position:absolute;top:30px;left:40px;cursor:pointer"></div><div class="assetname" title="asda">asdasd</div></li>'); -->
+		for(var i=0;i<assetGroupList.length;i++)
+		{
+			var str = ' <li id="'+assetGroupList[i].name+'" class=""><img src="./images/asset.png" alt=""><div class="assetThreat" style="position:absolute;top:30px;left:40px;cursor:pointer"></div>';
+			str += '<div class="assetname" title="'+assetGroupList[i].name+'">'+assetGroupList[i].name+'</div></li>';
+			$("#assetUl").append(str);
+		}
+		initAssetGroupData();
+		initAssetThreat();
+	}
+	function changeToAssetGroup()
+	{
+		$("#assetUl").empty();
+		var assetUl = document.getElementById("assetUl");
+		$("#assetUl").css("width",assetGroupList.length*140);
+		<!-- $("#assetUl").append(' <li class=""><img src="./images/asset.png" alt=""><div class="assetThreat" style="position:absolute;top:30px;left:40px;cursor:pointer"></div><div class="assetname" title="asda">asdasd</div></li>'); -->
+		for(var i=0;i<assetGroupList.length;i++)
+		{
+			var str = ' <li id="'+assetGroupList[i].name+'" class=""><img src="./images/asset_group.png" alt=""><div class="assetThreat" style="position:absolute;top:30px;left:40px;cursor:pointer"></div>';
+			str += '<div class="assetname" title="'+assetGroupList[i].name+'">'+assetGroupList[i].name+'</div></li>';
+			$("#assetUl").append(str);
+		}
+		initAssetGroupData(true);
+		initAssetThreat(true);
+	}
+	
+	function backToNormal()
+	{
+		var map = window.location.search;
+		//alert();
+		if(map.indexOf("globle")>-1)
+		{	
+			location.href="./globlemap.html";
+		}
+		else
+		{
+			location.href="./chinamap.html";
+		}
+	}
+
+</script>
+</head>
+<body onload="init()">
+ <div id="container" style="top:0px;left:0px;height:800px; width:100%;position:relative; background:url(./images/image_china.jpg);background-repeat:no-repeat;background-size:100% 100%;">  
+	<div style="width:1450px;height:70px;color:white;">
+		<div style="background:url(./image/fullscreen.png) no-repeat;position:relative;height:27px;width:27px;top:25px;left:10px;float:left;cursor:pointer;">	
+		</div> 
+		<div onclick="backToNormal();" style="background:url(./images/backToNormal.png) no-repeat;position:relative;float:left;top:25px;height:27px;width:67px;left:10px;cursor:pointer;">
+			<span style="margin-left:20px">返回</span>
+		</div>
+		<div style="background:url(./images/regionthreat.png) no-repeat;position:relative;height:70px;width:210px;top:10px;left:500px;float:left;">	
+		</div>
+	</div>
+	<div id="assetGroupPanel" style="">
+		<div style="background:url(./images/top_left.png);position:relative;height:7px;width:7px;top:0px;float:left;">	
+		</div>  
+		<div style="background:url(./images/top_right.png);position:relative;height:7px;width:7px;top:0px;float:right;">	
+		</div>
+		<div style="font-size:18px;color:white;font-weight:900;top:10px;left:10px;position:relative;width:1450px;height:20px;">
+		<button id="assetGroupBtn" class="butn green medium" onclick="changeToAssetGroup()">资产组</button>
+		<button id="assetBtn" class="butn green medium" onclick="changeToAsset()">资产</button>
+			<div style="color:white;float:right">
+				<form id="search_form" method="post" action="#"> 
+					<fieldset class="search" style="position:relative;float:right">
+						 <input type="text" class="box" name="s" id="s" class="inputText" placeholder="" >
+						  <button class="btn" title="SEARCH"> </button>
+					</fieldset>
+			    </form>  
+			</div>
+		</div>
+		
+		<div style="background:url(./images/bottom_left.png);position:absolute;height:7px;width:7px;float:left;bottom:0px"></div>
+		<div style="background:url(./images/bottom_right.png);position:absolute;height:7px;width:7px;float:right;bottom:0px;right:0px">	</div>
+		<div id="assetPrev" style="background:url(./images/toleft.png);position:relative;height:40px;width:15px;top:55px;left:10px;float:left;cursor:pointer"></div>
+		<div id="assetNext" style="background:url(./images/toright.png);position:relative;height:40px;width:15px;top:55px;right:-180px;float:right;cursor:pointer"></div>
+		 <div id="assetPic" style="font-size:12px;color:white;font-weight:900;position:relative;top:-5px;height:150px;width:1406px;left:0px;overflow:hidden;margin:0 auto;">
+				<ul id="assetUl" style="width: 188px;height:100px; left: 0px;">  
+				</ul>
+		</div> 
+	</div>
+	<div style="height:8px;">
+		<ul id="assetArrowUl" style="height:8px;display:none;left:180px">
+			<li class="">
+				<div class="arrow-up"></div>	
+			</li>
+		</ul>
+	</div>
+	<div id="assetTable" class="assetTableCls">
+		<div style="width:140px;float:left;color:#28E1F4;font-weight:900;position:relative;left:10px;top:20px">TOP5高危资产</div>
+		<div id="topRiskAsset" style="width:140px;color:#28E1F4;font-weight:900;position:relative;left:0px;top:10px"></div>
+		<div style="float:left;width:1px;height:230px;left:150px;top:20px;color:#28E1F4;position:relative;background:url(./images/vertical_line.png);background-repeat:no-repeat;background-size:auto 100%;"></div> 
+		<div id="attckDetailPanel" style="width:1150px; height:250px;;position:relative;float:right;top:10px">
+			<div style="font-size:14px;color:white;font-weight:900;position:absolute">
+				<div style="width:950px;float:left;margin-top:5px;color:#28E1F4">威胁事件列表</div>
+				<!-- <div id="alarmTableMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div> -->
+		   </div>
+		   <div id="alarmTableDetail">
+		   </div>
+		</div>
+	</div>
+    <div id="userGroupPanel" class="userGroupCls">
+        <div style="background:url(./images/top_left.png);position:relative;height:7px;width:7px;top:0px;float:left;">	
+		</div>  
+		<div style="background:url(./images/top_right.png);position:relative;height:7px;width:7px;top:0px;float:right;">	
+		</div>
+		<div style="font-size:18px;color:white;font-weight:900;top:10px;left:-22px;position:relative;width:100px;">&nbsp;&nbsp用户组</div>
+		<div style="background:url(./images/bottom_left.png);position:absolute;height:7px;width:7px;float:left;bottom:0px">	
+		</div>
+		<div style="background:url(./images/bottom_right.png);position:absolute;height:7px;width:7px;float:right;bottom:0px;right:0px">	
+		</div>
+		<div id="userPrev" style="background:url(./images/toleft.png);position:relative;height:40px;width:15px;top:55px;left:10px;float:left;cursor:pointer"></div>
+		<div id="usertNext" style="background:url(./images/toright.png);position:relative;height:40px;width:15px;top:55px;right:10px;float:right;cursor:pointer"></div>
+		<div onclick="test();" style="font-size:12px;color:white;font-weight:900;position:relative;top:35px;height:200px;width:100%;">
+			<ul style="">
+			  <li class=""><img src="./images/user_group.png" alt="" >
+				<div class="assetname" title="广东分部服务器组">广东分部服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="业务1服务器组">业务1服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="业务2服务器组">业务2服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="邮件服务器组1">邮件服务器组1</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="邮件服务器组2">邮件服务器组2</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="财务部服务器组">财务部服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="北京分部服务器组">北京分部服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="湖北分部服务器组">湖北分部服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="湖南分部服务器组">湖南分部服务器组</div>
+			  </li>
+			  <li class=""><img src="./images/user_group.png" alt="">
+				<div class="assetname" title="上海分部服务器组">上海分部服务器组</div>
+			  </li>
+			</ul>
+		</div> 
+		<div id="regionAttckDetailPanel" style="width:1450px; height:250px;position:relative;top:0px;background-color:rgba(0, 45, 92, 0.317647058823529);">
+			<div style="background:url(./images/top_left.png);position:relative;height:7px;width:7px;top:0px;float:left;">	
+			</div>  
+			<div style="background:url(./images/top_right.png);position:relative;height:7px;width:7px;top:0px;float:right;">	
+			</div>
+			<div style="background:url(./images/bottom_left.png);position:absolute;height:7px;width:7px;float:left;bottom:0px">	
+			</div>
+			<div style="background:url(./images/bottom_right.png);position:absolute;height:7px;width:7px;float:right;bottom:0px;right:0px">	
+			</div>
+			<div style="font-size:14px;color:white;font-weight:900;position:absolute;left:10px;top:5px">
+				<div style="width:1450px;float:left;margin-top:5px;color:#28E1F4">威胁事件列表</div>
+				<!-- <div id="alarmTableMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div> -->
+		   </div>
+		   <div id="regionAlarmTableDetail">
+		   </div>
+		</div>
+	</div>
+	
+</div>	
+</body>
+</html>

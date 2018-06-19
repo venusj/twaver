@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="pragma" content="no-cache">
+<meta charset="UTF-8">
+<title>威胁监控</title>
+<script type="text/javascript" src="./twaver.js"></script>
+<script type="text/javascript" src="./countries.js"></script>
+<script type="text/javascript" src="./FlowLink2.js"></script>
+<script type="text/javascript" src="./randomColor.js"></script>
+<script type="text/javascript" src="./license.js"></script>
+<script type="text/javascript" src="./jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="./table/angular.min.js"></script>
+<script type="text/javascript" src="./table/esight.ringchart.js"></script>
+<script type="text/javascript" src="./regionView.js"></script>
+<script type="text/javascript" src="./threatmap.js"></script>
+
+<style>
+.shrink{-webkit-transform:scale(0.8);-o-transform:scale(1); display:inline-block} 
+
+</style>
+<script type="text/javascript">
+var box = new twaver.ElementBox();
+var network = new twaver.vector.Network(box);
+var view = network.getView();
+var box2 = new twaver.ElementBox();
+
+var _createNodeFlag = false;
+var regionJson1 ='[{"elementId":"1","parentId":null,"name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"region1","ServiceID":1},"unresolvedEventCount":0,"threatSeverity":0,"point":null,"id":1,"regionName":"region1","locationX":1169.5555489648307,"locationY":422.2083606152293,"threatLevel":0,"threatNum":0,"regionCountry":"RU"},{"elementId":"2","parentId":null,"name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"region2","ServiceID":2},"unresolvedEventCount":0,"threatSeverity":0,"point":null,"id":2,"regionName":"region2","locationX":502.5419220898174,"locationY":468.7956411718789,"threatLevel":0,"threatNum":0,"regionCountry":"BR"},{"elementId":"Philippines","parentId":null,"name":"菲律宾","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"PH","TOPOELEM_ENGLISH_TITLE":"Philippines"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Turkey","parentId":null,"name":"土耳其","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"TR","TOPOELEM_ENGLISH_TITLE":"Turkey"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Netherlands","parentId":null,"name":"AAAA","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"NL","TOPOELEM_ENGLISH_TITLE":"Netherlands"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Thailand","parentId":null,"name":"泰国","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"TH","TOPOELEM_ENGLISH_TITLE":"Thailand"},"unresolvedEventCount":0,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"1-Thailand","parentId":null,"name":"region1-->>Thailand","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"region1-->>Thailand","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"1","toNodeId":"Thailand","linkType":"static"},{"elementId":"Philippines-2","parentId":null,"name":"菲律宾-->>region2","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"Philippines-->>region2","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"Philippines","toNodeId":"2","linkType":"static"},{"elementId":"Turkey-1","parentId":null,"name":"土耳其-->>region1","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"Turkey-->>region1","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"Turkey","toNodeId":"1","linkType":"dynamic"},{"elementId":"1-1","parentId":null,"name":"region1-->>region1","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"region1-->>region1","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"1","toNodeId":"1","linkType":"static"}]';
+var regionJson = JSON.parse(regionJson1);
+var bounds;
+var regionCache = {};
+var countryCache = {};
+var nodeCache={};
+var attackCache=[];
+var handle;
+var flowLinks = this.flowLinks = new twaver.List();
+var viewBounds;
+var colors = ["#06CC49","#009AE7","#FFCC00","#FFA235","#F82A2A"];
+var regions = ["北研所","南研所","美研所","荷兰分部","上海办事处"];//测试使用区域集合
+var countrys = ["美国","俄罗斯","新西兰","冰岛","巴西"];//测试使用国家集合
+var fullscreen = false;
+
+//全网威胁
+var threatLevelBox = new twaver.ElementBox();
+var threatLevelNetWork = new twaver.vector.Network(threatLevelBox);
+var threatLevelView = threatLevelNetWork.getView();
+    
+//TOP资产
+var topRiskAssetBox = new twaver.ElementBox();
+var topRiskAssetBoxNetWork = new twaver.vector.Network(topRiskAssetBox);
+var topRiskAssetBoxView = topRiskAssetBoxNetWork.getView();
+    
+//表格
+var alarmBox = new twaver.ElementBox();
+var alarmBoxNetWork = new twaver.vector.Network(alarmBox);
+var alarmBoxView = alarmBoxNetWork.getView();
+var table = new twaver.controls.Table(alarmBox);
+var tablePane1 = new twaver.controls.TablePane(table);
+var tableDom1 = tablePane1.getView();
+    
+//TOP国家
+var topRiskCountryBox = new twaver.ElementBox();
+var topRiskCountryBoxNetWork = new twaver.vector.Network(topRiskCountryBox);
+var topRiskCountryBoxView = topRiskCountryBoxNetWork.getView();
+//TOP区域
+var topRiskRegionBox = new twaver.ElementBox();
+var topRiskRegionBoxNetWork = new twaver.vector.Network(topRiskRegionBox);
+var topRiskRegionBoxView = topRiskRegionBoxNetWork.getView();
+//区域钻取视图
+var regionInBox = new twaver.ElementBox();
+var regionInBoxNetWork = new twaver.vector.Network(regionInBox);
+var regionInBoxView = regionInBoxNetWork.getView();  
+
+//区域-资产组
+var assetGroupBox = new twaver.ElementBox();
+var assetGroupBoxNetWork = new twaver.vector.Network(assetGroupBox);
+var assetGroupBoxView = assetGroupBoxNetWork.getView(); 
+
+
+//区域-用户组
+var userGroupBox = new twaver.ElementBox();
+var userGroupBoxNetWork = new twaver.vector.Network(userGroupBox);
+var userGroupBoxView = userGroupBoxNetWork.getView(); 
+    
+//表格-区域中
+var alarmInRegionBox = new twaver.ElementBox();
+var alarmInRegionBoxNetWork = new twaver.vector.Network(alarmBox);
+var alarmInRegionBoxView = alarmInRegionBoxNetWork.getView();
+var table2 = new twaver.controls.Table(alarmInRegionBox);
+var tablePane2 = new twaver.controls.TablePane(table2);
+var tableDom2 = tablePane2.getView();
+//表格所需DIV
+var alarmDiv;
+
+var toolBarBox = new twaver.ElementBox();
+var toolBarNetWork = new twaver.vector.Network(toolBarBox);
+var toolBarView = toolBarNetWork.getView();
+var toolbarClick = true;
+
+var toolBarButtonBox = new twaver.ElementBox();
+var toolBarButtonNetWork = new twaver.vector.Network(toolBarButtonBox);
+var toolBarButtonView = toolBarButtonNetWork.getView();
+
+var changeZoomBox = new twaver.ElementBox();
+var changeZoomNetWork = new twaver.vector.Network(changeZoomBox);
+var changeZoomView = changeZoomNetWork.getView();
+
+$(document).ready(function(){
+	var intranetNodes = new twaver.List();
+	//alert(intranetNodes.isEmpty());
+	updateRefreshTime();
+	init();
+	bindToolBarClickEvent();
+	window.onresize = doOnResize;
+});
+
+$(document).keyup(function(event){
+  //监听全屏模式下的esc事件
+  if(event.keyCode==27||event.keyCode==96)
+  {
+	if(fullscreen)
+	{
+		$("#fullscreen").css({"display":""});
+		$("#exitfullscreen").css({"display":"none"});
+		//alert(123);
+		fullscreen = false;
+		doOnResize();
+	}
+  }
+});
+
+
+function doOnResize()
+{ 
+	 var width = document.documentElement.scrollWidth;
+	 var height = window.innerHeight;
+	 //var height = 0.75*window.screen.height;
+	 if(height>0.75*window.screen.height)
+	 {
+		 height = 0.75*window.screen.height;
+	 }
+	 if(fullscreen)
+	 {
+		height = window.screen.height;
+		width = window.screen.width;
+	 }
+	 viewBounds = {x:0,y:0,width:width, height:height};
+	 network.adjustBounds(viewBounds);
+	 toolBarButtonNetWork.adjustBounds({x:5,y:7,width:40, height:40});
+	 threatLevelNetWork.adjustBounds({x:viewBounds.width-220,y:8,width:210, height:250});
+	 topRiskAssetBoxNetWork.adjustBounds({x:viewBounds.width-220,y:310,width:210, height:230});
+	 toolBarNetWork.adjustBounds({x:30,y:5,width:viewBounds.width-300, height:40});
+	 var topoRiskWidth = viewBounds.width/6;
+	  if(topoRiskWidth>250)
+	  {
+		  topoRiskWidth = 250;
+	  }
+	  //var tableWidth
+	  topRiskCountryBoxNetWork.adjustBounds({x:viewBounds.width/3-topoRiskWidth,y:viewBounds.height-250,width:topoRiskWidth, height:250});
+	  topRiskRegionBoxNetWork.adjustBounds({x:(viewBounds.width/3-topoRiskWidth*2),y:viewBounds.height-250,width:topoRiskWidth, height:250});
+	  tableWidth = viewBounds.width*2/3;
+	  var alarmBoxBounds={x:viewBounds.width-tableWidth,y:viewBounds.height-250,width:tableWidth, height:250};
+	  alarmBoxNetWork.adjustBounds(alarmBoxBounds);
+}
+
+//为toolbar绑定点击事件
+function bindToolBarClickEvent()
+{
+	$("#changeZoomDiv").find("td").each(function(e)
+	{
+		var currentEle = $(this);
+		currentEle.click(function()
+		{
+			console.log(currentEle.get(0).cellIndex);
+			
+			//launchFullscreen(document.documentElement);
+			/*if($("#toolbarDiv").find("td").eq(index).find("img:eq(0)").css("display")=="none")
+			{
+				$("#toolbarDiv").find("td").eq(index).find("img:eq(1)").css({"display":"none"});
+				$("#toolbarDiv").find("td").eq(index).find("img:eq(0)").css({"display":""});
+				//需要关闭全网威胁图表
+				$("#toolbarDiv").find("td").eq(index+1).find("span").css("color","#2B9CD5");	
+			}
+			else
+			{
+				//需要打开全网威胁图表
+				$("#toolbarDiv").find("td").eq(index).find("img:eq(0)").css({"display":"none"});
+				$("#toolbarDiv").find("td").eq(index).find("img:eq(1)").css({"display":""});
+				$("#toolbarDiv").find("td").eq(index+1).find("span").css("color","#1C4758");
+			}*/
+		});
+	});
+	$("#toolbarDiv").find("td").each(function(e)
+	{
+		var currentEle = $(this);  
+	
+		 currentEle.click(function(){ 
+			//获取当前td的index，从0开始
+			var cellIndex = currentEle.get(0).cellIndex;
+			//console.log(currentEle.get(0).cellIndex);
+			if(cellIndex==0||cellIndex==1)
+			{
+				changeImage(0,threatLevelView);
+			}
+			else if(cellIndex==2||cellIndex==3)
+			{
+				changeImage(2,topRiskAssetBoxView);
+			}
+			else if(cellIndex==4||cellIndex==5)
+			{
+				changeImage(4,topRiskRegionBoxView);
+			}
+			else if(cellIndex==6||cellIndex==7)
+			{
+				changeImage(6,topRiskCountryBoxView);
+			}
+			else if(cellIndex==8||cellIndex==9)
+			{
+				changeImage(8,alarmBoxView);
+			}
+			else if(cellIndex==14||cellIndex==15)
+			{
+				if($("#toolbarDiv").find("td").eq(15).find("img:eq(0)").css("display")=="none")
+				{
+					$("#toolbarDiv").find("td").eq(15).find("img:eq(1)").css({"display":"none"});
+					$("#toolbarDiv").find("td").eq(15).find("img:eq(0)").css({"display":""});
+					//需要关闭全网威胁图表
+					$("#toolbarDiv").find("td").eq(14).find("span").css("color","#2B9CD5");	
+					//changeImage(8,alarmBoxView);
+					flowLinks.forEach(function(e)
+					{
+						if(e.getClient('linkType')=="static")
+						{
+							e.s('link.color', "yellow").s('link.width', 1);
+							e.s('arrow.to',true);
+						}
+					});
+				}
+				else
+				{
+					//需要打开全网威胁图表
+					$("#toolbarDiv").find("td").eq(15).find("img:eq(0)").css({"display":"none"});
+					$("#toolbarDiv").find("td").eq(15).find("img:eq(1)").css({"display":""});
+					$("#toolbarDiv").find("td").eq(14).find("span").css("color","#1C4758");
+					//changeImage(8,alarmBoxView);
+					flowLinks.forEach(function(e)
+					{
+						if(e.getClient('linkType')=="static")
+						{
+							e.s('link.color', "rgba(2,10,24,0.1)").s('link.width', 0.1);
+							e.s('arrow.to',false);
+						}
+					});
+					
+				}	
+				
+			}
+			else if(cellIndex==16||cellIndex==17)
+			{
+				if($("#toolbarDiv").find("td").eq(17).find("img:eq(0)").css("display")=="none")
+				{
+					$("#toolbarDiv").find("td").eq(17).find("img:eq(1)").css({"display":"none"});
+					$("#toolbarDiv").find("td").eq(17).find("img:eq(0)").css({"display":""});
+					//需要关闭全网威胁图表
+					$("#toolbarDiv").find("td").eq(16).find("span").css("color","#2B9CD5");	
+					//changeImage(8,alarmBoxView);
+					flowLinks.forEach(function(e)
+					{
+						if(e.getClient('linkType')=="dynamic")
+						{
+							e.s('link.color', "yellow").s('link.width', 1);
+							e.s('arrow.to',true);
+						}
+					});
+				}
+				else
+				{
+					//需要打开全网威胁图表
+					$("#toolbarDiv").find("td").eq(17).find("img:eq(0)").css({"display":"none"});
+					$("#toolbarDiv").find("td").eq(17).find("img:eq(1)").css({"display":""});
+					$("#toolbarDiv").find("td").eq(16).find("span").css("color","#1C4758");
+					//changeImage(8,alarmBoxView);
+					flowLinks.forEach(function(e)
+					{
+						if(e.getClient('linkType')=="dynamic")
+						{
+							e.s('link.color', "rgba(2,10,24,0.1)").s('link.width', 0.1);
+							e.s('arrow.to',false);
+						}
+					});
+					
+				}	
+			}
+		 });
+	});
+}
+
+function init() {
+	alarmDiv = document.getElementById("attckDetailPanel");
+	registerImage();
+	//注册图片t
+	registerNormalImage('./image/operate.png','operate');
+	registerNormalImage('./image/toolbar.png','toolbar');
+	registerNormalImage('./image/toolbar_image.png','toolbar_image');
+	initNetwork();
+	loadMapData();	
+	initTable();
+	initThreatLevel();
+	initTopRiskAsset();
+	initTopRiskCountry();
+    initTopRiskRegion();
+	initToolBarButton();
+					/*var toNodeCountry = new twaver.Node();
+				//TR
+				    var country1 = box.getDataById("US");
+					//var country = box.getDataById("TR");
+					if(country1)
+					{
+						var center = country1.getCenterLocation();
+						toNodeCountry.setCenterLocation(Number(center.x), Number(center.y));
+						
+						//toNodeCountry.setToolTip(regionJson[i].name);					
+					}
+					//toNodeCountry.setClient('node_type', regionJson[i].type);
+					toNodeCountry.setImage('threatsrc2');
+					toNodeCountry.setLayerId('link');
+					toNodeCountry.setSize(20,20);
+				
+					toNodeCountry.setMovable(false);//不可以拖动
+					
+					box.add(toNodeCountry);*/
+	
+	//setInterval(refreshMap,5000);
+
+  _twaver.callLater(function(){
+    network.zoomOverview(true);
+  });
+}
+
+	function initToolBarButton()
+	{
+		document.body.appendChild(toolBarButtonView);
+		toolBarButtonNetWork.adjustBounds({x:5,y:5,width:40, height:40});
+		toolBarButtonNetWork.getView().style.backgroundColor = 'rgba(1,1,1,0.1)';//背景颜色
+		//toolBarNetWork.getView().style.backgroundColor = 'white';
+		toolBarButtonNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		
+		var div = document.getElementById("toolbarButtonDiv");
+		toolBarButtonView.appendChild(div);
+		
+		/*var changeZoomBox = new twaver.ElementBox();
+	    var changeZoomNetWork = new twaver.vector.Network(changeZoomBox);
+		var changeZoomView = changeZoomNetWork.getView();*/
+		document.body.appendChild(changeZoomView);
+		changeZoomNetWork.adjustBounds({x:5,y:50,width:25, height:95});
+		changeZoomNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		changeZoomNetWork.getView().style.backgroundColor = '#0D3B4D';
+		var zoomDiv = document.getElementById("changeZoomDiv");
+		changeZoomView.appendChild(zoomDiv);
+		
+	}
+	
+	function operateToolBar()
+	{
+		if(toolbarClick)
+		{
+			document.body.removeChild(toolBarView);
+			toolbarClick  = false;
+		}
+		else
+		{
+			//initToolBar();
+			document.body.appendChild(toolBarView);
+			toolbarClick  = true;
+		}
+	}
+	
+	function updateRefreshTime() {
+		var nowTime = formateTime(new Date(), "yyyy-MM-dd hh:mm:ss");
+		$("#refreshTimeValue").html(nowTime);
+	}
+	
+	function initThreatLevel()
+	{
+		  document.body.appendChild(threatLevelView);
+		  threatLevelNetWork.adjustBounds({x:1075+390,y:8,width:210, height:258});
+		  threatLevelNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
+		  threatLevelNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		  var div = document.getElementById("threatLevelPanel");
+		  threatLevelView.appendChild(div);
+	}
+
+	function initTopRiskAsset()
+	{
+		  document.body.appendChild(topRiskAssetBoxView);
+		  topRiskAssetBoxNetWork.adjustBounds({x:1075+390,y:310,width:210, height:230});
+		  topRiskAssetBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
+		  topRiskAssetBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		  var div = document.getElementById("topRiskAsset");
+		 
+		  for(var i=5;i>=1;i--)
+		  {
+			 var node = new twaver.Node();
+			  node.setImage('gradient1');
+			  node.setClient('c_width',i*40);
+			  node.setClient('c_name',"region"+i);
+			  node.setLocation(10,10+(6-i)*38);
+			  node.setMovable(false);
+			  topRiskAssetBox.add(node);
+			  var node1 = new twaver.Node();
+			  node1.setImage('gradient2');
+			  node1.setLocation(10,20+(6-i)*38);
+			  node1.setClient('c_width',i*40*0.75);
+			  node1.setClient("c_color",getColor(i*20)); 
+			  node1.setClient('c_name',"region"+i);
+			  node1.setClient('c_score',i*20);
+			  node1.setMovable(false);
+			  topRiskAssetBox.add(node1);
+		  }
+		  topRiskAssetBoxView.appendChild(div);
+   
+		  /*var div1 = document.createElement('span');
+		  div1.style.color = 'white';
+		  div1.innerHTML = "1.3.3.3";
+		  
+		  topRiskAssetBoxView.appendChild(div1);*/
+		 
+    
+		  
+	}
+	
+	function initToolBar()
+	{
+		document.body.appendChild(toolBarView);
+		//viewBounds
+		toolBarNetWork.adjustBounds({x:30,y:2,width:viewBounds.width-300, height:40});
+		toolBarNetWork.getView().style.backgroundColor = 'rgba(1,1,1,0.1)';//背景颜色
+		//toolBarNetWork.getView().style.backgroundColor = 'white';
+		toolBarNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		/*var toolBarNode = new twaver.Node();
+		 toolBarNode.setImage('toolbar_image');
+		 toolBarNode.setLocation(5,5);
+		 toolBarNode.setSize(1200,32);
+		 toolBarNode.setMovable(false);
+		//toolBarNode.setToolTip("过滤条件");
+		// node.setLayerId('link');
+		 toolBarBox.add(toolBarNode);
+		 //var toolBarNode = new twaver.Node();*/
+		 
+		 var div = document.getElementById("toolbarDiv");
+		 toolBarView.appendChild(div);
+		 toolBarNetWork.addInteractionListener(function(e)
+		 {
+			if(e.element.getImage()== "toolbar_image")
+			{
+				//console.log(e.element);
+				//console.log(toolBarNetWork.getElementAt(e));
+				
+			}
+		 });
+		// toolBarNetWork.getView().addEventListener('mousedown', function (e) { var point = toolBarNetWork.getLogicalPoint(e); console.log(point); });
+	}
+	
+	function refreshMap()
+	{
+		window.cancelAnimationFrame(handle);
+	}
+
+	//显示国家和区域
+    function showRegionView()
+    {
+		/*var toolBarNode = new twaver.Node();
+		 toolBarNode.setImage('toolbar');
+		 toolBarNode.setLocation(5,5);
+		 toolBarNode.setSize(30,30);
+		 toolBarNode.setClient("cursor","pointer");
+		 toolBarNode.setMovable(false);
+		 toolBarNode.setToolTip("过滤条件");
+		 //toolBarNode.s("cursor","pointer");
+		// node.setLayerId('link');getStyleProperties 
+		//console.log(toolBarNode.s("cursor"));
+		//console.log(123);
+		 box.add(toolBarNode);*/
+		//network.addInteractionListener(function (e) {console.log();});
+    	/*产生威胁的区域*/
+		if(regionJson.length>0)
+		{
+		  
+		 
+			for ( var i = 0; i < regionJson.length; i++) {
+
+			if(regionJson[i].type=="RegionNode"){
+				var node = new twaver.Node();
+				node.setImage('locate');
+				node.setClient('c_value',(i+1)*22);
+				//node.setClient('c_value',88);
+				node.setClient('c_name', regionJson[i].regionName);
+				//node.setSize(100,100);
+				node.setToolTip(regionJson[i].regionName);
+				//node.setClient('color', 'red');
+				node.setClient('radius', 100);
+				node.setClient('node_type', regionJson[i].type);
+				node.setSize(25,25);
+				node.setClient('r_state','unattacked');
+				//node.setClient('country',regionJson[i].regionCountry);
+				node.setLayerId('link');//将node放在linklayer中，防止被覆盖
+				node.setCenterLocation(regionJson[i].locationX,
+						regionJson[i].locationY);
+			     //node.setCenterLocation(859, 212);
+				node.setMovable(false);//不可以拖动
+				//将区域信息加入缓存中
+				regionCache[regionJson[i].elementId] = node;
+				nodeCache[regionJson[i].elementId] = node;
+				//regionCache.push(node);
+				box.add(node);
+				}
+				else if(regionJson[i].type=="AttackSourceNode")
+				{
+					 var toNodeCountry = new twaver.Node();
+				//TR
+				    var country = box.getDataById(regionJson[i].userPropertites.TOPOELEM_COUNTRY_CODE);
+					//var country = box.getDataById("TR");
+					if(country)
+					{
+						var center = country.getCenterLocation();
+						var centerX = Number(center.x);
+						var centerY = Number(center.y);
+						if(regionJson[i].userPropertites.TOPOELEM_COUNTRY_CODE == "NL")
+						{
+							centerX += 110;
+							centerY -= 50;
+						}
+						else if(regionJson[i].userPropertites.TOPOELEM_COUNTRY_CODE == "US")
+						{
+							centerX += 50;
+							centerY += 30;
+						}
+						toNodeCountry.setCenterLocation(centerX, centerY);
+						/*var translate = countryJson[country];
+						if(!translate || translate === "" )
+						{
+							translate = country;
+						}*/
+						toNodeCountry.setToolTip(regionJson[i].name);					
+					}
+					toNodeCountry.setClient('node_type', regionJson[i].type);
+					toNodeCountry.setImage('threatsrc2');
+					toNodeCountry.setLayerId('link');
+					toNodeCountry.setSize(20,20);
+					//toNodeCountry.setSize(10, 10);
+					toNodeCountry.setMovable(false);//不可以拖动
+					//countryCache.push(toNodeCountry);
+					countryCache[regionJson[i].elementId] = toNodeCountry;
+					nodeCache[regionJson[i].elementId] = toNodeCountry;
+					box.add(toNodeCountry);
+				}
+				else if(regionJson[i].type=="AttackLink")
+				{
+					attackCache.push(regionJson[i]);
+				}
+			}
+		}
+    	
+    }
+	function initTopRiskCountry()
+	{
+		  document.body.appendChild(topRiskCountryBoxView);
+		  topRiskCountryBoxNetWork.adjustBounds({x:viewBounds.width-1400,y:viewBounds.height-250,width:235, height:258});
+		  topRiskCountryBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
+		  topRiskCountryBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		  var div = document.getElementById("topRiskCountry");
+		 
+		  var j = 5;
+		  var highestCountry = 500;
+		  topRiskCountryBoxNetWork.getView().addEventListener('mousedown', function (e) { var point = topRiskCountryBoxNetWork.getLogicalPoint(e); console.log(point); });	
+		  for(var i=1;i<=5;i++)
+		  {
+			  var eventNub = (6-i)*100;
+			  var leth = (eventNub/highestCountry) *100;
+              var node1 = new twaver.Node();
+			   node1.setImage('gradient4');
+			   //node1.setLocation((i-1)*45+15,220-40*j);
+			   node1.setLocation((i-1)*45+15,210-leth*1.8);
+			   node1.setClient('c_height',leth*1.8);
+               node1.setClient('c_color',colors[5-i]);
+			   node1.setClient('c_score',leth);
+			  node1.setClient('c_name',countrys[i-1]);
+			  node1.setMovable(false);
+			  topRiskCountryBox.add(node1);
+			 var node = new twaver.Node();
+			  node.setImage('gradient3');
+			  node.setClient('c_height',40*j);
+			  node.setClient('c_name',countrys[i-1]);
+			  node.setLocation((i-1)*45+15,230);
+			  node.setMovable(false);
+			  topRiskCountryBox.add(node);
+              j--;
+
+		  }
+		  topRiskCountryBoxView.appendChild(div);  
+	}
+    
+	function initTopRiskRegion()
+	{
+		  document.body.appendChild(topRiskRegionBoxView);
+		  topRiskRegionBoxNetWork.adjustBounds({x:viewBounds.width-1670,y:viewBounds.height-250,width:235, height:258});
+		  topRiskRegionBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
+		  topRiskRegionBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+		  var div = document.getElementById("topRiskRegion");
+		 
+        var node1 = new twaver.Node();
+        node1.setImage('gradient5');
+        node1.setLocation(55,50);
+        node1.setClient('c_R',40*4);
+        node1.setClient('c_color',colors[4]);
+        node1.setClient('c_name',regions[4]);
+        node1.setClient('c_num',100);
+        topRiskRegionBox.add(node1);
+        
+        var node2 = new twaver.Node();
+        node2.setImage('gradient5');
+        node2.setLocation(135,50);
+        node2.setClient('c_R',40*3.5);
+        node2.setClient('c_color',colors[3]);
+        node2.setClient('c_name',regions[3]);
+        node2.setClient('c_num',80);
+        topRiskRegionBox.add(node2);
+        
+        var node3 = new twaver.Node();
+        node3.setImage('gradient5');
+        node3.setLocation(150,115);
+        node3.setClient('c_R',40*3);
+        node3.setClient('c_color',colors[2]);
+        node3.setClient('c_name',regions[2]);
+        node3.setClient('c_num',60);
+        topRiskRegionBox.add(node3);
+        
+        var node4 = new twaver.Node();
+        node4.setImage('gradient5');
+        node4.setLocation(93,140);
+        node4.setClient('c_R',40*2.8);
+        node4.setClient('c_color',colors[1]);
+        node4.setClient('c_name',regions[1]);
+        node4.setClient('c_num',40);
+        topRiskRegionBox.add(node4);
+        
+        var node5 = new twaver.Node();
+        node5.setImage('gradient5');
+        node5.setLocation(40,120);
+        node5.setClient('c_R',40*2.4);
+        node5.setClient('c_color',colors[0]);
+        node5.setClient('c_name',regions[0]);
+        node5.setClient('c_num',20);
+        topRiskRegionBox.add(node5);
+
+		topRiskRegionBoxView.appendChild(div);  
+    }
+
+    function doAnimate()
+	{
+		for ( var i = 0; i < attackCache.length; i++) 
+		{
+			    var fromNode = new twaver.Node();
+				var toNode = new twaver.Node();
+				var fromNodeId =attackCache[i].fromNodeId;
+				var toNodeId =attackCache[i].toNodeId;
+				var fromOldNode = nodeCache[fromNodeId];
+				var toOldNode = nodeCache[toNodeId];
+				//var loca = fromNode.getLocation();
+				//var toloca = toNode.getLocation();
+				var fromCenter = fromOldNode.getCenterLocation();
+				
+				  fromNode.setImage('unvisble');
+				 // fromNode.setId(fromNodeId);
+				  fromNode.setClient('color', 'red');
+				  fromNode.setClient('radius', 100);
+				  fromNode.setSize(100, 100);
+				  fromNode.setLayerId('link');
+				  fromNode.setMovable(false);//不可以拖动
+				  fromNode.setCenterLocation(fromCenter.x, fromCenter.y);
+				  box.add(fromNode);
+				  //console.log(fromCenter);
+				
+				var toCenter = toOldNode.getCenterLocation();
+				
+				  toNode.setImage('unvisble');
+				  toNode.setClient('color', 'red');
+				  toNode.setClient('radius', 100);
+				 // toNode.setId(toNodeId);
+				  toNode.setSize(100, 100);
+				  toNode.setLayerId('link');
+				  toNode.setMovable(false);//不可以拖动
+				  toNode.setCenterLocation(toCenter.x, toCenter.y);
+				  box.add(toNode);
+				  //console.log(toCenter);
+					var colors = randomColor({luminosity: 'orange',count: 10});	
+					var link;
+					if(fromNodeId == toNodeId)
+					{
+						link = new FlowLink(attackCache[i].elementId,fromNode, fromNode);
+						link.s('link.width', 1.5);
+					}
+					else
+					{
+						link = new FlowLink(attackCache[i].elementId,fromNode, toNode);
+						link.s('link.width', 1);
+					}
+					
+					var color = colors[0];
+					link.setLayerId('link');
+					link.setClient('box',box);
+					link.setClient('factor',i);
+					link.setClient('tail',25);
+					link.setClient('tailRadius',3);
+					//设置线条为动态线还是静态线tailRadius
+					link.setClient('linkType',attackCache[i].linkType);
+					
+					link.s('link.color', "yellow").setClient('link.type','flowLink');
+					
+					if(attackCache[i].linkType != "static")
+					{
+						link.s('link.pattern',[4,2]);
+					}
+					link.s('arrow.to',true);
+					link.s('arrow.from',false);
+					link.s('arrow.from.shape','arrow.tail');
+					link.s('arrow.from.shadow',true);
+					
+					link.s('arrow.from.shadow.blur',1);
+					link.s('arrow.from.shadow.color',color);
+					link.s('arrow.from.color',color);
+					link.s('arrow.from.at.edge',true);
+					link.s('arrow.from.xoffset',0.000001);
+					link.s('arrow.to.shape',"arrow.slant");
+					link.s('arrow.to.at.edge',false);
+					link.s('arrow.to.color',"yellow");
+					//link.s("link.join","round");
+					
+					//攻击源为区域的时候需要做偏移
+					if(fromOldNode.getClient("node_type")=="RegionNode")
+					{
+						link.s('link.from.yoffset',20);
+						//link.s('link.from.xoffset',3);
+						if(fromCenter.x>toCenter.x)
+						{
+							link.s("link.to.xoffset",10);
+						}
+						else
+						{
+							link.s("link.to.xoffset",-10);
+						}	
+					}
+					else
+					{
+						if(fromCenter.x>toCenter.x)
+						{
+							link.s("link.to.xoffset",16);
+						}
+						else
+						{
+							link.s("link.to.xoffset",-16);
+						}	
+					}
+					link.setAnimate(3000);
+					//link.setAnimate(Math.random() * 2000 + 1000);
+					//link.set
+					box.add(link);
+					link.setClient('font.color',randomColor());
+				   // box2.add(link);
+				   link.playAnimate();
+				   flowLinks.add(link);
+				//console.log(loca);
+				//iff(nodeCache)
+		
+		}
+		var tail = 15;
+		var min = 0;
+
+		window.requestAnimFrame = (function(){
+			return  window.requestAnimationFrame       || 
+			window.webkitRequestAnimationFrame || 
+			window.mozRequestAnimationFrame    || 
+			window.oRequestAnimationFrame      || 
+			window.msRequestAnimationFrame     || 
+			function(callback, element){
+			  window.setTimeout(callback, 1000/60);
+			};
+		  })();
+
+		  var fps = 1;
+		  var now;
+		  var then = Date.now();
+		  var interval = 1200/fps;
+		  var delta;
+		
+		  function animate() {
+			handle = requestAnimFrame(animate);
+			now = Date.now();
+			delta = now - then;
+			if (delta > interval) {
+			  then = now - (delta % interval);
+			  draw(); 
+			}
+		  }
+		  function draw() {  
+			flowLinks.forEach(function(link){
+			  link.playAnimate();
+			});
+		  }
+		 draw();
+		//draw();
+		    
+	}
+
+function initTable() {
+	document.body.appendChild(alarmBoxView);
+	for(var i=0;i<=4;i++)
+	{
+		var from1 = new twaver.Node({
+                name: 'from',
+				image:"unvisble",
+                location: {
+                    x: 100,
+                    y: 100
+                }
+            });
+			from1.s("select.color","red");
+			from1.setClient('height', 55);
+			from1.setClient('font.color', "#2FD6FF");
+			from1.setClient('level', i);
+			from1.setClient('sn', i);
+			from1.setClient('attname', "a"+i);
+			from1.setClient('onthreatip', "1.3.3.3");
+			from1.setClient('onthreatuser', "user"+i);
+			from1.setClient('onthreatregion', "region1");
+			from1.setClient('occtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+			from1.setClient('durtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+			from1.setClient('revtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
+			//from1.setClient('operate', new Image());
+			
+            alarmBox.add(from1);
+	
+	}
+	alarmBoxNetWork.adjustBounds({x:viewBounds.width-1070,y:viewBounds.height-250,width:1030, height:250});
+	alarmBoxNetWork.getView().style.backgroundColor = 'rgba(3,11,25,0.5)';//背景颜色
+	alarmBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
+	var div = document.getElementById("attckDetailPanel");
+	alarmBoxView.appendChild(div);
+  //var view = network.getView();
+  // table.setRowLineColor('rgba(255,0,0,0.5)');attckDetailPanel
+  var tableHeader = tablePane1.getTableHeader().getView();
+  var tbHeader = tablePane1.getTableHeader();
+  tbHeader.setColumnLineColor('black');
+  tableHeader.style.backgroundColor = 'rgba(34,47,77,0.4)';
+  tableDom1.style.position = 'absolute';
+  tableDom1.style.bottom = '0px';
+   tableDom1.style.right = '0px';
+  tableDom1.style.width = "1020px";
+  tableDom1.style.height = "220px";
+  tablePane1.getTableHeader().setHeight(32); 
+  //tablePane.getView().setHeight(32); 
+  // tableDom.style.backgroundColor = 'rgba(255,0,0,1)';
+  // document.body.appendChild(tableDom);select.color setRowLineWidth 
+  table.setRowHeight(34); //设置行高
+  table.setRowLineColor("rgba(7,16,33,0.1)"); 
+  table.setRowLineWidth(0.1); 
+  table.setEditable(true); 
+  table.setFocusOnClick (false);
+  table.isMakeVisibleOnSelected(true); 
+  
+ /* table.updateCurrentEditor=function(e)
+  {
+	//alert(123);
+	var ad = table.getDataAt(e);
+	//console.log(ad);
+	var column = table.getColumnAt(e);
+    //console.log(column.getName());
+	var sele = table.getSelectColor();
+	//console.log(sele);
+	//console.log(table.isMakeVisibleOnSelected()); 
+	if(column.getName()=="操作")
+	{
+		console.log(column.getName());
+	}
+  }*/
+  
+  table.getView().onmousedown = null;
+  alarmBoxView.appendChild(tableDom1);
+  window.onresize = function () {
+    tablePane1.invalidate();
+  }
+  var columwidth = 100;
+  //序号
+	  createColumn(table, 'SN', 'sn', 'client', 'i',70);
+	  //威胁等级
+	  createColumn(table, '威胁等级', 'threatlevel', 'client', 'i');
+	  //'威胁名称'
+	  createColumn(table, '威胁名称', 'attname', 'client','string',columwidth);
+	  
+	  //'受攻击ip'
+	  createColumn(table, '受威胁IP', 'onthreatip', 'client','string',columwidth);
+	  //'受攻击用户'
+	  createColumn(table, '受威胁用户', 'onthreatuser', 'client','string',columwidth);
+	  //'受攻击区域'
+	  createColumn(table, '受威胁区域', 'onthreatregion', 'client','string',columwidth);
+	  //'威胁源国家/区域'
+	  createColumn(table, '最近发生时间', 'occtime', 'client','string',columwidth);
+	  //'威胁源IP'
+	  createColumn(table, '持续时间', 'durtime', 'client','string',columwidth);
+	  //'第一次发生时间'
+	  createColumn(table, '检测时间', 'revtime', 'client','string',columwidth);
+	  //'状态'
+	  createColumn(table, '处理状态', 'status', 'client','string',columwidth);
+	  //'状态'
+	  createColumn(table, '操作', 'operate', 'accessor','image',70);
+	  //createColumn(table, 'Icon', 'icon', 'accessor','image',100,40);
+ /* createColumn(table, '威胁等级', 'icon', 'accessor', 'i',100); 
+  createColumn(table, '威胁名称', 'icon', 'accessor','string');
+  createColumn(table, '受威胁IP', 'id', 'accessor', 'string');
+  createColumn(table, '受威胁用户', 'id', 'accessor', 'string');
+  createColumn(table, '受威胁区域', 'type', 'client','string',130);
+  createColumn(table, '最近发生时间', 'type', 'client','string',130);
+  createColumn(table, '持续时间', 'type', 'client','string',130);
+  createColumn(table, '检测时间', 'time', 'client','string',130);
+  createColumn(table, '处理状态', 'type', 'client','string');
+  createColumn(table, '操作', 'type', 'client','string');*/
+//威胁等级，威胁名称，受威胁IP 受威胁区域，最近发生时间，持续时间，检测时间，处理状态，操作
+table.getSelectColor = function() {
+     return "#235F8A";
+}
+table.onCellRendered = function (params) {
+		//console.log(table,getSelectColor());
+	    var div = params.div;
+	    var data = params.data;
+	    var level = data.getClient("level");
+	    var color = 'rgba(41,255,0,1)';
+	    if(null!=level)
+	    {
+	    	color = "#2FD6FF";
+	    }
+	    div.style.color = color;
+		//div.style.color = '#CFCFCF';
+	    div.style.textAlign = 'center';
+		div.style.border = 'none';
+		/*div.style.borderStyle = 'none';
+		div.style.borderTopStyle = 'none';
+		div.style.borderBottomStyle = 'none';
+		div.style.borderLeftStyle = 'none';
+		div.style.borderRightStyle = 'none';
+		var cssText = div.style.cssText;
+		
+		div.style.cssText = cssText.replace("solid","none");*/
+	    if(params.rowIndex && params.rowIndex%2 === 1){
+	      div.style.backgroundColor = 'rgba(34,47,77,0.4)'; //设置表头的背影颜色
+	    }else{
+	    	div.style.backgroundColor = 'rgba(7,16,33,0.1)'; //设置表头的背影颜色
+	    }
+		if(params.column.getName() === '操作'){
+			var image = new Image(); 
+			image.src = './image/operate.png';
+			image.id = data.getClient("sn");
+			image.style.marginTop="10px";
+			image.style.cursor="pointer";
+			image.onclick = function(e)
+			{
+				//alert(JSON.stringify(e));
+				console.log(e.target.id);
+			}
+			div.appendChild(image);
+		}
+		else if(params.column.getName() === '威胁等级')
+		{
+			var image = new Image(); 
+			
+			var level = data.getClient("level");
+			image.style.marginTop="10px";
+			//image.style.cursor="pointer";
+			if(level==1)
+			{
+				image.src = './image/lower_toolbar.png';
+			}
+			else if(level==2)
+			{
+				image.src = './image/low_toolbar.png';
+			}
+			else if(level==3)
+			{
+				image.src = './image/middle_toolbar.png';
+			}
+			else if(level==4)
+			{
+				image.src = './image/high_toolbar.png';
+			}
+			else
+			{
+				image.src = './image/higher_toolbar.png';
+			}
+			div.appendChild(image);
+		}
+	  };
+
+  /*table.onCellRendered = function (params) {
+    var div = params.div;
+    var data = params.data;
+    div.style.color =  data.getClient('font.color');
+    div.style.textAlign = 'center';
+  };*/
+  table.setMakeVisibleOnSelected(false);
+  table.getSelectionModel().addSelectionChangeListener(function(e) { 
+
+});
+  /*box2.getSelectionModel().addSelectionChangeListener(function(e){
+    var lastSelectedData = box2.getSelectionModel().getLastData();
+    var selectModel = box.getSelectionModel();
+    selectModel.setSelection(lastSelectedData);
+    if(lastSelectedData instanceof FlowLink) {
+      var link = lastSelectedData;
+      window.flowLinks.forEach(function(link){
+        link.s('link.width',0.1);
+      });
+      link.s('link.width',1);
+    }
+  });*/
+}
+
+function createColumn(table, name, propetyName, propertyType, valueType,width) {
+  var column = new twaver.Column(name);
+  column.setName(name);
+  column.setPropertyName(propetyName);
+  column.setPropertyType(propertyType);
+  if (valueType) {
+    column.setValueType(valueType);
+  }
+  width && column.setWidth(width);
+  // column.setFontColor(randomColor());
+  column.renderHeader = function (div) {
+    var span = document.createElement('span');
+    span.style.whiteSpace = 'nowrap';
+    span.style.verticalAlign = 'middle';
+    span.style.padding = '1px 2px 1px 2px';
+    span.innerHTML = column.getName() ? column.getName() : column.getPropertyName();
+    span.setAttribute('title', span.innerHTML);
+    // span.style.backgroundColor = 'rgba(0,0,0,0)';
+    span.style.font = 'bold 12px Helvetica';
+    div.style.textAlign = 'center';
+    div.style.color = '#00AAFF';
+    div.style.backgroundColor = 'rgba(0,0,0,0)';
+    div.appendChild(span);
+  };
+
+  table.getColumnBox().add(column);
+  return column;
+}
+
+function initNetwork() {
+  //初始化network的布局
+  network.setZoom(1.11);
+  document.body.appendChild(view);
+  var browser = getBrowser();
+  var height;
+  if(browser == "Chrome")
+  { 
+	height = 930;
+  }
+  else
+  {
+	height = 881;
+  }
+  var width = document.documentElement.scrollWidth;
+	//var width = 1680;
+  var height = document.documentElement.clientHeight;
+  viewBounds = {x:0,y:2,width:width, height:height};
+  network.adjustBounds(viewBounds);
+  network.getView().style.backgroundColor = '#071021';//背景颜色
+  network.setDragToPan(false);//设置network是否可以拖拽移动
+  twaver.Styles.setStyle('select.style', 'none');//设置选中的样式
+  
+  //SelectionModel用于管理所有的网元的选中情况
+  var sm = network.getSelectionModel();
+  var lastSelected = null, oldColor;
+
+  //添加选中监听事件，当有网元被选中后触发此事件
+  sm.addSelectionChangeListener(function (e) {
+    var data = sm.getLastData();//获取最后一个被选中的网元
+    if (data == null) {
+      if (lastSelected) {
+        lastSelected.setStyle('vector.fill.color', oldColor);//设置填充色，即改变选中国家的颜色
+      }
+      lastSelected = null;
+    }
+    if (data instanceof twaver.ShapeNode) {
+      if (data !== lastSelected) {
+        if (lastSelected) {
+          lastSelected.setStyle('vector.fill.color', oldColor);
+        }
+        oldColor = data.getStyle('vector.fill.color');
+        data.setStyle('vector.fill.color', '#3C6777');
+        lastSelected = data;
+      }
+    }
+  });
+
+  //设置link线条的样式，如绘制曲线
+  network.setLinkPathFunction(function(linkUI, defaultPoints) {
+      var link = linkUI._element;
+      var from = link.getFromNode();
+      var to = link.getToNode();
+      if(from.getId() === to.getId()){
+       var f = linkUI.getFromPoint();
+       var t = linkUI.getToPoint();
+       var points = new twaver.List();
+
+       var aWidth = 34, aX = f.x - aWidth/2, aY = f.y, aHeight = 38;
+       var hB = (aWidth / 2) * .5522848,
+       vB = (aHeight / 2) * .5522848,
+       eX = aX + aWidth,
+       eY = aY + aHeight,
+       mX = aX + aWidth / 2,
+       mY = aY + aHeight / 2;
+
+       // points.add({x:aX,y:mY});
+
+       points.add({x:mX,y:aY});
+
+       var cps = new twaver.List();
+       cps.add({x:mX + hB, y:aY});
+       cps.add({x:eX,y: mY - vB});
+       cps.add({x:eX,y:mY});
+       points.add(cps);
+
+       var cps = new twaver.List();
+       cps.add({x:eX, y:mY + vB});
+       cps.add({x:mX + hB, y:eY});
+       cps.add({x:mX, y:eY});
+       points.add(cps);
+
+       var cps = new twaver.List();
+       cps.add({x:mX - hB,y: eY});
+       cps.add({x:aX, y:mY + vB});
+       cps.add({x:aX, y:mY});
+       points.add(cps);
+
+       var cps = new twaver.List();
+       cps.add({x:aX, y:mY - vB});
+       cps.add({x:mX - hB, y:aY});
+       cps.add({x:mX, y:aY});
+       points.add(cps);
+
+       return points;
+     }else if(link.getClient('link.type') === 'flowLink'){
+      var f = linkUI.getFromPoint();
+      var t = linkUI.getToPoint();
+      var factor = link.getClient('factor') || 1;
+
+      var points = new twaver.List();
+      points.add(f);
+      points.add(t);
+
+      var lineLength = _twaver.math.getDistance(f, t);
+      var offset = -lineLength / 5;
+      var m = {
+        x: (f.x + t.x) / 2 + offset ,
+        y: (f.y + t.y) / 2 + offset + Math.pow(-1,factor)*factor * 20
+      }
+
+      var cps = new twaver.List();
+      cps.add(m);
+      cps.add(t);
+
+      points.removeAt(1);
+      points.add(cps);
+      return points;
+    }else{
+      return defaultPoints;
+    }
+  });
+
+  network.getView().addEventListener('mousemove', function(e){
+    var target = network.getElementAt(e);
+    if(target instanceof twaver.Link && target.getClient('link.type') === 'flowLink') {
+      window.flowLinks.forEach(function(link){
+        //link.s('link.width',0.1);
+      });
+
+     // target.s('link.width',1);
+    }
+  });
+
+  network.addInteractionListener(function(e){
+    if(e.kind === 'clickBackground') {
+     window.flowLinks.forEach(function(link){
+    //  link.s('link.width',0.1);
+    });
+   }
+   //toolbar_image
+   /*if(e.element)
+   {
+		if(e.element.getImage()== "toolbar")
+	   {
+		console.log(e.element);
+		if(toolbarClick)
+		{
+			document.body.removeChild(toolBarView);
+			toolbarClick  = false;
+		}
+		else
+		{
+			//initToolBar();
+			document.body.appendChild(toolBarView);
+			toolbarClick  = true;
+		}
+	   }
+   }*/
+   if("clickElement"===e.kind)
+    {
+        var node = network.getElementAt(e);
+        if(node instanceof twaver.Node)
+        {
+            var name = node.getClient("node_name");
+            var type = node.getClient("node_type");
+            if(type==="RegionNode")
+            {
+//                alarmInRegionBox.clear();//清空区域钻取box
+                
+				console.log(111)
+                alarmBoxView.removeChild(tableDom1);
+                document.body.removeChild(alarmBoxView);
+                
+                document.body.removeChild(view);
+                document.body.removeChild(threatLevelView);
+                document.body.removeChild(topRiskAssetBoxView);
+                document.body.removeChild(topRiskCountryBoxView);
+                document.body.removeChild(topRiskRegionBoxView);
+
+                initRegionView();
+            }
+        }
+     } 
+   
+ });
+
+  network.getView().addEventListener('mousedown', function(e){
+   if(_createNodeFlag) {
+    var point = network.getLogicalPoint2(e);
+    var parent = network.getElementAt(e);
+    if(!parent) return;
+    var node = new twaver.Follower({
+      image:'circle',
+      width:100,
+      height:100,
+      
+      clients:{
+        'color':'red',
+        'radius':100,
+      }
+    });
+    node.setLayerId('link');
+    node.setCenterLocation(point.x, point.y);
+    parent.s('vector.fill.color','#CDBE70');
+    node.setHost(parent);
+    box.add(node);
+  }
+});
+
+  network.getElementsAt =  function (e) {
+    if (this.visibleList == null) {
+      return null;
+    }
+    var point;
+    var list = new twaver.List();
+    if (e.target) {
+      point = this.getLogicalPoint2(e);
+    } else if(e.event) {
+      if(e.event.target) {
+       point = this.getLogicalPoint2(e.event);
+     }
+   } else {
+    point = e;
+  }
+
+  if (this._hitTestTopAttachmentList != null) {
+    var tsize = this._hitTestTopAttachmentList.size();
+    for (var j = tsize - 1; j >= 0; j--) {
+      var att = this._hitTestTopAttachmentList.get(j);
+      if (att.hit(point.x, point.y)) {
+        return att.getElement();
+      }
+    }
+  }
+  if (this.visibleList != null) {
+    var size = this.visibleList.size();
+    for (var i = size - 1; i >= 0; i--) {
+      var n = this.visibleList.get(i);
+      var ui = this.getElementUI(n);
+      if (ui && ui.hit(point.x, point.y)) {
+        list.add(n);
+      }
+    }
+  }
+  return list;
+},
+
+network.getView().addEventListener('mouseup', function(e){
+  var point = network.getLogicalPoint2(e);
+  var list = network.getElementsAt(e);
+  var target = network.getElementAt(e);
+  var parent ;
+  if(list.size() >= 2){
+    list.forEach(function(data) {
+      if(data instanceof twaver.ShapeNode) {
+        parent = data;
+      }
+    });
+  }
+  if(!parent) return;
+  target.setHost(parent);
+});
+
+var listener = function(e){
+  if (e.kind === 'validateEnd' ) {
+    bounds = network.getUnionBounds();
+    if(bounds.width !== 0){
+      console.log(bounds);
+      network.removeViewListener(listener);  
+    }
+  }
+}
+network.addViewListener(listener);
+
+}
+
+/*加载地图数据*/
+function loadMapData () {
+  var xhttp = new XMLHttpRequest();
+  xhttp.open('GET', 'world-lowres.geo_c.json');
+  xhttp.onload = function () {
+    _loadData(xhttp.responseText);
+  };
+  xhttp.send();
+}
+
+function _loadData (json) {
+  JSON.parse(json).features.forEach(function (feature) {
+	/*if(feature.properties.continent != "Africa")
+	{
+		return true;
+	}*/
+    //每一个国家实质上就是一个ShapeNode
+    var node = new twaver.ShapeNode(feature.id);
+    
+    //设置每个国家区域的颜色，填充色等属性
+    node.setStyle('vector.fill', true)
+    .setStyle('vector.fill.color', '#1D2945')
+    .setStyle('vector.outline.color', '#7791D7')
+    .setStyle('select.color', '#FFFFFF')
+    .setStyle('vector.outline.width', 0.5);
+    node.setMovable(false);
+    node.setClient('font.color',randomColor());
+    node.setClient('type','');
+    node.setToolTip(feature.properties.name);
+
+    //根据读取的地图数据，设置shapeNode的绘制方式，这块代码可不用理解，也不需要任何改动。
+    var segments = new twaver.List();
+    var points = new twaver.List();
+    if (feature.geometry.type === 'MultiPolygon') {
+      feature.geometry.coordinates.forEach(function (polygon) {
+        polygon.forEach(function (coordinate) {
+          segments.add('moveto');
+          coordinate.forEach(function (point, i) {
+            if (i !== 0) {
+              segments.add('lineto');
+            }
+            points.add({ x: point[0] / 10 + 230, y: -point[1] / 10 + 1087 });
+          });
+        });
+      });
+    } else if (feature.geometry.type === 'Polygon') {
+      feature.geometry.coordinates.forEach(function (coordinate) {
+        segments.add('moveto');
+        coordinate.forEach(function (point, i) {
+          if (i !== 0) {
+            segments.add('lineto');
+          }
+          points.add({ x: point[0] / 10 + 230, y: -point[1] / 10 + 1087 });
+        });
+      });
+    } else {
+      console.log(feature.geometry.type);
+    }
+    node.setSegments(segments);
+    node.setPoints(points);
+    box.add(node);
+	
+  });
+   var oceaniaCountry = box.getDataById("NL");
+	  console.log(oceaniaCountry.getCenterLocation());
+//network.centerByLogicalPoint(362,206);
+//europeNetWork.centerByLogicalPoint(0.5*962,0.5*313);
+//创建单独的一层，用于放置所有的link，目的是让link置于最上层
+var linkLayer = new twaver.Layer('link');
+//layer由layerBox进行管理，使用方法和DataBox类似
+box.getLayerBox().add(linkLayer);
+showRegionView();
+doAnimate();
+//initAnimate();
+initToolBar();
+}
+
+function initAnimate() {
+  var usa = box.getDataById('US');
+  usa.setStyle('vector.fill.color', '#FFFF37');
+
+  var china = box.getDataById('CN');
+  china.setStyle('vector.fill.color', '#FFCC56');
+
+  var brazil = box.getDataById('BR');
+  brazil.s('vector.fill.color','#87ffd3');
+
+  var france = box.getDataById('FR');
+  france.s('vector.fill.color','#87ffd3');
+
+  var mermany = box.getDataById('DE');
+  mermany.s('vector.fill.color','#87ffd3');
+
+  usaFollower = new twaver.Node();
+  usaFollower.setImage('circle');
+  usaFollower.setClient('color', 'red');
+  usaFollower.setClient('radius', 100);
+  usaFollower.setSize(100, 100);
+  var center = usa.getCenterLocation();
+  usaFollower.setCenterLocation(center.x + 50, center.y + 30);
+  usaFollower.setLayerId('link');
+  box.add(usaFollower);
+
+  chinaFollower = new twaver.Node();
+  chinaFollower.setImage('circle');
+  chinaFollower.setClient('color', 'green');
+  chinaFollower.setClient('radius', 100);
+  chinaFollower.setSize(100, 100);
+  chinaFollower.setCenterLocation(china.getCenterLocation());
+  chinaFollower.setLayerId('link');
+  box.add(chinaFollower);
+
+  brazilFollower = new twaver.Node({
+    image:'circle',
+    width: 80,
+    height: 80,
+    clients:{
+      'color': '#FF8F31',
+      'radius': 40,
+    }
+  });
+  brazilFollower.setCenterLocation(brazil.getCenterLocation());
+  brazilFollower.setLayerId('link');
+  box.add(brazilFollower);
+
+  franceFollower = new twaver.Node({
+    image:'circle',
+    width: 80,
+    height: 80,
+    clients:{
+      'color':'#FF5600',
+      'radius': 40,
+    }
+  });
+  franceFollower.setCenterLocation(france.getCenterLocation().x - 145,france.getCenterLocation().y - 100);
+  franceFollower.setLayerId('link');
+  box.add(franceFollower);
+
+  var tail = 15;
+  var min = 0;
+
+
+  window.requestAnimFrame = (function(){
+    return  window.requestAnimationFrame       || 
+    window.webkitRequestAnimationFrame || 
+    window.mozRequestAnimationFrame    || 
+    window.oRequestAnimationFrame      || 
+    window.msRequestAnimationFrame     || 
+    function(callback, element){
+      window.setTimeout(callback, 1000/60);
+    };
+  })();
+
+  var fps = 1;
+  var now;
+  var then = Date.now();
+  var interval = 1200/fps;
+  var delta;
+
+  function animate() {
+    requestAnimFrame(animate);
+    now = Date.now();
+    delta = now - then;
+    if (delta > interval) {
+      then = now - (delta % interval);
+      draw(); 
+    }
+  }
+
+  var flowLinks = this.flowLinks = new twaver.List();
+  var colors = randomColor({luminosity: 'orange',count: 10});
+  for(var i =0;i<1;i++){
+    var link = new FlowLink(usaFollower, chinaFollower);
+    var color = colors[0];
+    link.setLayerId('link');
+    link.setClient('box',box);
+    link.setClient('factor',i);
+    link.s('link.color', color).
+    s('link.width', 1).
+    setClient('link.type','flowLink');
+    link.s('link.width', 0.1);
+    link.s('link.pattern',[4,2]);
+    link.s('arrow.from',false);
+    link.s('arrow.from.shape','arrow.tail');
+    link.s('arrow.from.shadow',true);
+    link.s('arrow.from.shadow.blur',5);
+    link.s('arrow.from.shadow.color',color);
+    link.s('arrow.from.color',color);
+    link.s('arrow.from.xoffset',0.000001);
+    link.setAnimate(Math.random() * 2000 + 1000);
+    box.add(link);
+    link.setClient('font.color',randomColor());
+    box2.add(link);
+    flowLinks.add(link);
+    link.playAnimate();
+  }
+
+  function draw() {
+    flowLinks.forEach(function(link){
+      link.playAnimate();
+    });
+  }
+  animate();
+}
+
+function handle_button_click() {
+  _createNodeFlag = !_createNodeFlag;
+}
+
+function handle_button_click() {
+  if(!window.timer){
+    var colors = randomColor({luminosity: 'orange',count: 10});
+    timer = setInterval(function(){
+      for(var i =0;i<1;i++){
+        var link = new FlowLink(usaFollower, chinaFollower);
+        var color = colors[0];
+        link.setLayerId('link');
+        link.setClient('box',box);
+        link.setClient('factor',i + parseInt(Math.random()*50));
+        link.s('link.color', color).
+        s('link.width', 1).
+        setClient('link.type','flowLink');
+        link.s('link.width', 0.1);
+        link.s('link.pattern',[4,2]);
+        link.s('arrow.from',false);
+        link.s('arrow.from.shape','arrow.tail');
+        link.s('arrow.from.shadow',true);
+        link.s('arrow.from.shadow.blur',5);
+        link.s('arrow.from.shadow.color',color);
+        link.s('arrow.from.color',color);
+        link.s('arrow.from.xoffset',0.000001);
+        link.setAnimate(Math.random() * 2000 + 1000);
+        box.add(link);
+        link.setClient('font.color',randomColor());
+        box2.add(link);
+        flowLinks.add(link);
+        box2.getSelectionModel().setSelection(link);
+        link.playAnimate();
+      }
+    },2000);
+  }else{
+    clearInterval(timer);
+  }
+}
+
+function handle_createNode(){
+  if(!bounds) return;
+  var p1 = lnglatToXY(-175, -20, bounds.width, bounds.height);
+  var node = new twaver.Node({
+    centerLocation:{x:p1.x, y:p1.y},
+  });
+    node.setImage("threatsrc2");
+  box.add(node);
+}
+
+function ringChartController($scope) {
+	    $scope.threatScore = 45;
+	    
+        $scope.options = {
+            showText: true,
+			//backgroundColor:'red',
+            colorThreshold: [0, 20, 40, 60, 80, 100],
+            colorSetTop: ['#72CE17', '#72CE17', '#06B5F7', '#FFCF04', '#FFB700', '#FF4621'],
+            colorSetBottom: ['#16B44A', '#16B44A', '#0392C8', '#E8C018', '#F7820D', '#E92820'],
+            textColorSet: ['#1FBE5C', '#1FBE5C', '#06B2F3', '#EDC314', '#F7820D', '#F21414']
+        };
+		//$scope.options.backgroundColor ="white";
+		$scope.options.backgroundColor = "#FBF7F7";
+	    $scope.options.ringWidth = "15";
+  
+	}
+ 
+	function registerNormalImage(url, name) {
+	 var image = new Image();
+	 image.src = url;
+	 image.onload = function() {
+		 twaver.Util.registerImage(name, image, image.width, image.height);
+		 image.onload = null;
+		 network.invalidateElementUIs();
+		 };
+	 }
+	 
+	 function changeImage(index,view)
+	 {
+		if($("#toolbarDiv").find("td").eq(index).find("img:eq(0)").css("display")=="none")
+		{
+			$("#toolbarDiv").find("td").eq(index).find("img:eq(1)").css({"display":"none"});
+			$("#toolbarDiv").find("td").eq(index).find("img:eq(0)").css({"display":""});
+			//需要关闭全网威胁图表
+			$("#toolbarDiv").find("td").eq(index+1).find("span").css("color","#2B9CD5");	
+			document.body.appendChild(view);
+		}
+		else
+		{
+			//需要打开全网威胁图表
+			$("#toolbarDiv").find("td").eq(index).find("img:eq(0)").css({"display":"none"});
+			$("#toolbarDiv").find("td").eq(index).find("img:eq(1)").css({"display":""});
+			$("#toolbarDiv").find("td").eq(index+1).find("span").css("color","#1C4758");
+			document.body.removeChild(view);
+		}		
+	 }
+	 function display(e)
+	{   
+	    e.style.color="#28E1F4";
+	}
+    
+	function disappear(e)
+	{
+	    e.style.color="rgba(2,10,24,0.5)";
+	}
+       
+	function getMore(e)
+	{
+	    alert("更多内容...");
+	}
+
+</script>
+</head>
+<body >
+<div id="threatLevelPanel" style="height:250px">
+        <div style="font-size:14px;color:#28E1F4;font-weight:900;">全网威胁等级</div>
+		<div name="frameCaption" class=""
+			style="height: 10px; font-size: 12px">
+			<ul
+				style="list-style-type: none; margin: 0; padding: 0; line-height: 30px">
+				<li style="width: 80%; display: block; float: left;" id="threatTitle" title=""><!--&nbsp;<s:text
+						name="nsc.assetRisk.threatLevel"></s:text>
+					<s:text name=":" /><a id="threatLevelValue"
+					href="javascript:void(0);" onclick="jumpToEvent('1')"
+					class="home_threat_level_value" style="font-weight: normal;"></a>-->
+				</li>
+				<li style="display: block; float: right"><a
+					href="javascript:switchThreatLevelWindows(true)"
+					style="float: right; margin-top: 5px; margin-right: 4px"> 
+				</a></li>
+			</ul>
+		</div>
+		<table border="0" cellspacing="0" cellpadding="2" align="center"
+			style="color: white">
+			<tbody>
+				<tr>
+					<td align="center"><div id="nscThreatScoreChart"
+							ng-controller="ringChartController" style="" id="ng-app"
+							ng-app="directives_basic" style="background:#FFFFFF;">
+							<div>
+								<esight:ring-chart width="130" height="130" data="threatScore"
+									options="options" align="center">
+								</esight:ring-chart>
+							</div>
+						</div></td>
+				</tr>
+				<tr align="center" style="font-size: 10px">
+					<td>
+						<s:text name="nsc.assetRisk.threatLevel"></s:text>
+						<s:text name=":" /><a id="threatLevelValue"
+						href="javascript:void(0);" onclick="jumpToEvent('1')"
+						class="home_threat_level_value" style="font-weight: normal;"></a>
+					</td>
+				</tr>
+				<tr align="center" style="font-size: 10px;height:12px" class="">
+					<td>
+					
+							<span style="font-size:12px;color:#2B9CD5;font-weight:900;">威胁等级：</span> <span style="font-size:12px;color:yellow;font-weight:900;">中</span>
+						
+					</td>
+				</tr>
+				<tr align="center" style="font-size: 10px;height:12px">
+					<td>
+						
+							<span id="refreshTimeValue"
+								style="font-size:12px;color:#2B9CD5;font-weight:600;"></span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" height="8px"></td>
+				</tr>
+				<tr align="center" style="font-size: 10px;height:12px">
+					<td>
+							<span style="font-size:12px;color:#2B9CD5;font-weight:600;">安全事件（总）： </span><span style="font-size:12px;color:yellow;font-weight:600;">456|<span style="font-size:12px;color:red;font-weight:600;">860</span>个</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div id="topRiskAsset" style="font-size:14px;height:250px;position:absolute">
+        <div style="width:140px;float:left;color:#28E1F4;font-weight:900">TOP5高危资产</div>
+        <div id="topRiskAssetMore" style="float:left;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
+	</div>
+	<div id="attckDetailPanel" style="width: 200px; margin-left: 10px;">
+        <div style="font-size:14px;color:white;font-weight:900;position:absolute">
+            <div style="width:950px;float:left;margin-top:5px;color:#28E1F4">威胁事件列表</div>
+            <div id="alarmTableMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
+	   </div>
+    </div>
+	<div id="toolbarButtonDiv" onclick="operateToolBar()" style="cursor:pointer;margin-left:1px;position:absolute;background:url(./image/toolbar.png);width:35px;height:35px;background-repeat:no-repeat;background-size:100% 100%;">	
+	</div>
+	<div id="toolbarDiv" style="margin-left:13px;position: absolute;background:url(./image/toolbar_image.png);width:1200px;height:40px;background-repeat:no-repeat;background-size:100% 100%;">
+		 <table style="margin-left:13px;">
+			<tbody>
+				<tr>
+					<td> <img id="allthreat_enable"  src="./image/allthreat_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="allthreat_disable"  src="./image/allthreat_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;" >&nbsp;全网威胁等级</span></td>
+					<td> <img id="u616_img"  src="./image/topasset_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="u616_img"  src="./image/topasset_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;" >&nbsp;TOP高危资产</span></td>
+					<td> <img id="u616_img"  src="./image/threatregion_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="u616_img"  src="./image/threatregion_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;受威胁区域排行</span></td>
+					<td> <img id="u616_img"  src="./image/threatcountry_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="u616_img"  src="./image/threatcountry_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;威胁源国家排行</span></td>
+					<td> <img id="u616_img"  src="./image/threatevent_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="u616_img"  src="./image/threatevent_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;威胁事件列表</span></td>
+					<td> <img id="u616_img"  src="./image/toolbar_line.png" tabindex="0" style="cursor: pointer;"></td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;">&nbsp;威胁等级</span></td>
+					<td> <img id="u616_img"  src="./image/higher_toolbar.png" tabindex="0">
+					<img id="u616_img"  src="./image/high_toolbar.png" tabindex="0">
+					<img id="u616_img"  src="./image/middle_toolbar.png" tabindex="0">
+					<img id="u616_img"  src="./image/low_toolbar.png" tabindex="0">
+					<img id="u616_img"  src="./image/lower_toolbar.png" tabindex="0"></td>
+					<td> <img id="u616_img"  src="./image/toolbar_line.png" tabindex="0" style="cursor: pointer;"></td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;静态攻击线</span></td>
+					<td> <img id="u616_img"  src="./image/staticline_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="u616_img"  src="./image/staticline_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+					<td> <span style="font-size:15px;color:#2B9CD5;font-weight:600;cursor: pointer;">&nbsp;动态攻击线</span></td>
+					<td> <img id="u616_img"  src="./image/dynamicline_enable.png" tabindex="0" style="cursor: pointer;">
+						 <img id="u616_img"  src="./image/dynamicline_disable.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+				</tr>
+			</tbody>
+		 </table>
+	</div>
+	<div id="changeZoomDiv" style="margin-left:1px;position:absolute;width:35px;height:135px;">	
+		<table style="margin-left:1px;">
+			<tbody>
+				<tr>
+					<td > <img id="fullscreen" onclick="toFullscreen('fullscreen')" src="./image/fullscreen.png" tabindex="0" style="cursor: pointer;">
+						 <img id="exitfullscreen" onclick="toFullscreen('exitfullscreen')" src="./image/exitfullscreen.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+				</tr>
+				<tr>
+					<td> <img id="tochina" onclick="changeMap('tochina')" src="./image/tochina.png" tabindex="0" style="cursor: pointer;">
+						 <img id="toglobal" onclick="changeMap('toglobal')"src="./image/toglobal.png" tabindex="0" style="cursor: pointer;display:none;">
+					</td>
+				</tr>
+				<tr>
+					<td> <img id="zoomin" onclick="zoomChange('zoomin');" src="./image/zoomin.png" tabindex="0" style="cursor: pointer;">
+					</td>
+				</tr>
+				<tr>
+					<td> <img id="zoomout" onclick="zoomChange('zoomout');" src="./image/zoomout.png" tabindex="0" style="cursor: pointer;">
+					</td>
+				</tr>
+			</tbody>
+		 </table>
+	</div>
+	<div id="topRiskCountry" style="height:250px;width:500px">
+         <div style="font-size:14px;color:white;font-weight:900;position:absolute">
+             <div style="float:left;margin-top:6px"><img src="./image/threatcountry_enable.png"/>&nbsp</div>
+             <div style="width:150px;float:left;margin-top:5px;color:#28E1F4">威胁源国家排行</div>
+             <div id="topRiskCountryMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
+         </div>
+	</div>
+     <div id="topRiskRegion" style="height:250px">
+         <div style="font-size:14px;color:white;font-weight:900;position:absolute">
+             <div style="float:left;margin-top:6px"><img src="./image/threatregion_enable.png"/>&nbsp</div>
+             <div style="width:150px;float:left;margin-top:5px;color:#28E1F4">受威胁区域排行</div>
+             <div id="topRiskRegionMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
+         </div>
+	</div>
+	<div id="assetGroupPanel" style="height:300px">
+        <div style="font-size:12px;color:white;font-weight:900;">&nbsp;&nbsp资产组</div>
+	</div>
+    <div id="userGroupPanel" style="height:300px">
+        <div style="font-size:12px;color:white;font-weight:900;">&nbsp;&nbsp用户组</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,126 @@
+/**
+ * This function is designed for a GUI prototype, RatioPie.
+ *
+ * @author l00250963
+ */
+function drawRatioPie(canvasID, ratio, textValues)
+{
+    var c = document.getElementById(canvasID);
+    var ctx = c.getContext("2d");
+    
+    if (ratio < 0)
+    {
+        ratio = 0;
+    }
+    else if (ratio > 1)
+    {
+        ratio = 1;
+    }
+    else
+    {
+        ratio = Math.round(ratio * 100) / 100;
+    }
+    
+    if (textValues.length != 2)
+    {
+        textValues = new Array("0", "0");
+    }
+    
+    var lineWidth = 8;
+    var lineColor = "#FFFFFF";
+    var ratioFillColor = "#FF6600";
+    var restFillColor = "#3399FF";
+    var ratioFont = "48px Verdana";
+    var textFontHeight = 24;
+    var textFont = textFontHeight + "px DejaVu Sans Mono";
+    var textColors = new Array("#FF0000", "#FF6600");
+    var textLines = new Array("重要告警", "次要告警");
+    // lineSpace is usually 0.5 * textFont height
+    var lineSpace = 0.5 * 24;
+    var backgroundColor = "#FFFFFF";
+    
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = lineColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    
+    var margin = 20;
+    var deltaR = 50;
+    var maxR = c.height / 2 - margin;
+    
+    if (deltaR >= maxR)
+    {
+        deltaR = maxR / 3;
+    }
+    
+    var centerX = margin + maxR;
+    var centerY = margin + maxR;
+    
+    var arcStartPi = 1.5 * Math.PI;
+    var arcEndPi = 0;
+    
+    // calculate the end of first arc
+    // the arc always starts drawing at the same direction of x-axis
+    if (ratio <= 0.25)
+    {
+        arcEndPi = (ratio + 0.75 )* 2 * Math.PI;
+    }
+    else
+    {
+        // we have to separate arc into two parts, 1 / 4 and the rest
+        arcEndPi = (ratio - 0.25) * 2 * Math.PI;
+    }
+    
+    if (ratio <= 0 || ratio >= 1)
+    {
+        arcStartPi = 0;
+        arcEndPi = 2 * Math.PI;
+    }
+    
+    // draw a background
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, c.width, c.height);
+    
+    // draw the ratio part
+    ctx.beginPath();
+    // the outer line
+    ctx.arc(centerX, centerY, maxR, arcStartPi, arcEndPi, false);
+    ctx.arc(centerX, centerY, maxR - deltaR, arcEndPi, arcStartPi, true);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fillStyle = ratioFillColor;
+    ctx.fill();
+    
+    // draw the rest part
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, maxR, arcEndPi, arcStartPi, false);
+    ctx.arc(centerX, centerY, maxR - deltaR, arcStartPi, arcEndPi, true);
+    ctx.closePath();
+    ctx.stroke();
+    if (ratio < 1)
+    {
+        ctx.fillStyle = restFillColor;
+    }
+    else
+    {
+        // ratio >= 1, all are ratioFillColor
+        ctx.fillStyle = ratioFillColor;
+    }
+    ctx.fill();
+    
+    // draw text in circle
+    ctx.font = ratioFont;
+    ctx.fillStyle = ratioFillColor;
+    // fill the text in the center of circle
+    ctx.fillText(Math.round(ratio * 100) + "%", centerX, centerY);
+    
+    // draw text out circle
+    ctx.font = textFont;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    for (var i = 0; i < textLines.length; i++)
+    {
+        ctx.fillStyle = textColors[i];
+        ctx.fillText(textValues[i] + " " + textLines[i], (margin + maxR) * 2, margin + i * (textFontHeight + lineSpace));
+    }
+}
