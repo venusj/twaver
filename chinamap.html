@@ -3,9 +3,9 @@
    <head>
        <meta charset="utf-8">
    </head>
- 
+
    <body onload="initfullscreen()" style="height: 100%; margin: 0;">
-     <div id="main" style="height:600px;width: 800px;position:absolute;margin-left: 300px;margin-top: 20px"></div> 
+     <div id="main" style="height:600px;width: 800px;position:absolute;margin-left: 300px;margin-top: 20px"></div>
      <div id="container" style="height: 100%;background:url('./images/image_china.jpg');background-repeat:no-repeat;background-size:100% 100%;"></div>
 	 <div id="threatLevelPanel" style="height:250px">
         <div style="font-size:14px;color:#28E1F4;font-weight:900;">全网威胁等级</div>
@@ -16,7 +16,7 @@
 				<li style="width: 80%; display: block; float: left;" id="threatTitle" title="">
 				<li style="display: block; float: right"><a
 					href="javascript:switchThreatLevelWindows(true)"
-					style="float: right; margin-top: 5px; margin-right: 4px"> 
+					style="float: right; margin-top: 5px; margin-right: 4px">
 				</a></li>
 			</ul>
 		</div>
@@ -72,7 +72,7 @@
             <div id="alarmTableMore" style="float:left;margin-top:5px;color:rgba(2,10,24,0.5);font-weight:200;cursor:pointer" onmousemove="display(this)" onmouseout="disappear(this)" onmousedown="getMore()">More</div>
 	   </div>
     </div>
-    <div id="toolbarButtonDiv" onclick="operateToolBar()" style="cursor:pointer;margin-left:1px;position:absolute;background:url('./image/toolbar.png');width:35px;height:35px;background-repeat:no-repeat;background-size:100% 100%;">	
+    <div id="toolbarButtonDiv" onclick="operateToolBar()" style="cursor:pointer;margin-left:1px;position:absolute;background:url('./image/toolbar.png');width:35px;height:35px;background-repeat:no-repeat;background-size:100% 100%;">
 	</div>
 	<div id="toolbarDiv" style="margin-left:13px;position: absolute;background:url( './image/toolbar_image.png');width:1200px;height:40px;background-repeat:no-repeat;background-size:100% 100%;">
 		 <table style="margin-left:13px;">
@@ -118,7 +118,7 @@
 			</tbody>
 		 </table>
 	</div>
-	<div id="changeZoomDiv" style="margin-left:1px;position:absolute;width:35px;height:135px;">	
+	<div id="changeZoomDiv" style="margin-left:1px;position:absolute;width:35px;height:135px;">
 		<table style="margin-left:1px;">
 			<tbody>
 				<tr>
@@ -166,15 +166,15 @@
 	<script type="text/javascript" src="./FlowLink2.js"></script>
 	<script type="text/javascript" src="./randomColor.js"></script>
 	<script type="text/javascript" src="./jquery-1.7.2.min.js"></script>
-	
+
 	<script type="text/javascript" src="./regionView.js"></script>
 	<script type="text/javascript" src="./threatmap.js"></script>
     <script type="text/javascript">
-	
+
 	   var dom = document.getElementById("main");
 		var myChart = echarts.init(dom);
 		var app = {};
-		
+
 		var option = {
 	        tooltip : {
 	            trigger: 'item',
@@ -199,19 +199,19 @@
 	                    emphasis:{label:{show:false}}
 	                },
 	                data:[
-	                    
+
 	                ]
 	            }
 	        ]
 	    };
 	    myChart.setOption(option);
-		
+
 		myChart.on(echarts.config.EVENT.MAP_SELECTED,function(param)
 		{
 			var data = [param.event.layerX,param.event.layerY]
 			var geoCo = myChart.chart.map.getGeoByPos("china",data)
 			var serData = option.series[0].data;
-			
+
 				option.series[0].markPoint ={
 		                itemStyle : {
 		                    normal:{
@@ -220,7 +220,7 @@
 		                },
 		                data : [
 		                    {name : 'poin', value : 'asd'}
-		                    
+
 		                ]
 		            };
 				option.series[0].geoCoord =	{
@@ -231,7 +231,7 @@
 	   var box = new twaver.ElementBox();
        var network = new twaver.vector.Network(box);
 	   var view = network.getView();
-	   
+
 	   var dataBox = new twaver.ElementBox();
 	   //北美洲地图
 	   var northAmericaBox = new twaver.ElementBox();
@@ -257,17 +257,17 @@
 	   var oceaniaBox = new twaver.ElementBox();
 	   var oceaniaNetWork = new twaver.vector.Network(oceaniaBox);
        var oceaniaView = oceaniaNetWork.getView();
-	   
+
 	   //全网威胁
 		var threatLevelBox = new twaver.ElementBox();
 		var threatLevelNetWork = new twaver.vector.Network(threatLevelBox);
 		var threatLevelView = threatLevelNetWork.getView();
-		
+
 		//TOP资产
 		var topRiskAssetBox = new twaver.ElementBox();
 		var topRiskAssetBoxNetWork = new twaver.vector.Network(topRiskAssetBox);
 		var topRiskAssetBoxView = topRiskAssetBoxNetWork.getView();
-			
+
 		//表格
 		var alarmBox = new twaver.ElementBox();
 		var alarmBoxNetWork = new twaver.vector.Network(alarmBox);
@@ -275,7 +275,7 @@
 		var table = new twaver.controls.Table(alarmBox);
 		var tablePane1 = new twaver.controls.TablePane(table);
 		var tableDom1 = tablePane1.getView();
-			
+
 		//TOP国家
 		var topRiskCountryBox = new twaver.ElementBox();
 		var topRiskCountryBoxNetWork = new twaver.vector.Network(topRiskCountryBox);
@@ -289,7 +289,7 @@
 		var countrys = ["美国","俄罗斯","新西兰","冰岛","巴西"];//测试使用国家集合
 		var viewBounds;
 		var fullscreen = false;
-		var nodeCache={};	
+		var nodeCache={};
 		var attackCache = [];
 		var regionNodeCache ={};
 		//静态、动态线都需要两个unvisble的弄的作为起始和结束点
@@ -298,8 +298,8 @@
 		var continentLocate = [];
 		var continentName;
 		var flowLinks = this.flowLinks = new twaver.List();
-		//var 
-	   
+		//var
+
 	    //表格
 		var alarmBox = new twaver.ElementBox();
 		var alarmBoxNetWork = new twaver.vector.Network(alarmBox);
@@ -307,7 +307,7 @@
 		var table = new twaver.controls.Table(alarmBox);
 		var tablePane1 = new twaver.controls.TablePane(table);
 		var tableDom1 = tablePane1.getView();
-	   
+
 		var toolBarBox = new twaver.ElementBox();
 		var toolBarNetWork = new twaver.vector.Network(toolBarBox);
 		var toolBarView = toolBarNetWork.getView();
@@ -320,7 +320,7 @@
 		var changeZoomBox = new twaver.ElementBox();
 		var changeZoomNetWork = new twaver.vector.Network(changeZoomBox);
 		var changeZoomView = changeZoomNetWork.getView();
-		
+
 	    var regionJson1 ='[{"elementId":"1","parentId":null,"lon":"116","lat":"39","name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"总部","ServiceID":1},"unresolvedEventCount":0,"threatSeverity":90,"point":null,"id":1,"regionName":"总部","locationX":819.5555489648307,"locationY":232.2083606152293,"threatLevel":0,"threatNum":0,"regionCountry":"RU"},{"elementId":"2","lon":"117","lat":"32","parentId":null,"name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"分支1","ServiceID":2},"unresolvedEventCount":0,"threatSeverity":82,"point":null,"id":2,"regionName":"分支1","locationX":732.5419220898174,"locationY":468.7956411718789,"threatLevel":0,"threatNum":0,"regionCountry":"BR"},{"elementId":"3","lon":"108","lat":"28","parentId":null,"name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"分支1","ServiceID":3},"unresolvedEventCount":0,"threatSeverity":20,"point":null,"id":3,"regionName":"分支2","locationX":732.5419220898174,"locationY":468.7956411718789,"threatLevel":0,"threatNum":0,"regionCountry":"BR"},{"elementId":"4","lon":"85","lat":"30","parentId":null,"name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"分支1","ServiceID":4},"unresolvedEventCount":0,"threatSeverity":45,"point":null,"id":4,"regionName":"分支3","locationX":732.5419220898174,"locationY":468.7956411718789,"threatLevel":0,"threatNum":0,"regionCountry":"BR"},{"elementId":"5","lon":"85","lat":"39","parentId":null,"name":null,"type":"RegionNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_ENGLISH_TITLE":"分支1","ServiceID":5},"unresolvedEventCount":0,"threatSeverity":10,"point":null,"id":5,"regionName":"分支4","locationX":732.5419220898174,"locationY":468.7956411718789,"threatLevel":0,"threatNum":0,"regionCountry":"BR"},{"elementId":"Philippines","parentId":null,"name":"菲律宾","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"PH","TOPOELEM_ENGLISH_TITLE":"Philippines"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Turkey","parentId":null,"name":"土耳其","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"TR","TOPOELEM_ENGLISH_TITLE":"Turkey"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Russia","parentId":null,"name":"俄罗斯","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"RU","TOPOELEM_ENGLISH_TITLE":"elementId"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Australia","parentId":null,"name":"澳大利亚","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"AU","TOPOELEM_ENGLISH_TITLE":"Australia"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Thailand","parentId":null,"name":"泰国","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"TH","TOPOELEM_ENGLISH_TITLE":"Thailand"},"unresolvedEventCount":0,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Egypt","parentId":null,"name":" 埃及","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"EG","TOPOELEM_ENGLISH_TITLE":"Egypt"},"unresolvedEventCount":1,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"United States of America","parentId":null,"name":"美国","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"US","TOPOELEM_ENGLISH_TITLE":"United States of America"},"unresolvedEventCount":0,"threatSeverity":0,"point":null,"sourceType":"country"},{"elementId":"Brazil","parentId":null,"name":"巴西","type":"AttackSourceNode","topoTipInfo":null,"needTooltip":true,"userPropertites":{"TOPOELEM_COUNTRY_CODE":"BR","TOPOELEM_ENGLISH_TITLE":"Brazil"},"unresolvedEventCount":1,"threatSeverity":11,"point":null,"sourceType":"country"},{"elementId":"Brazil-2","parentId":null,"name":"巴西-->>分支1","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"巴西-->>分支1","lat":null},"unresolvedEventCount":1,"threatSeverity":65,"fromNodeId":"Brazil","toNodeId":"4","linkType":"static"},{"elementId":"Turkey-1-dynamic","parentId":null,"name":"土耳其-->>总部","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"Turkey-->>总部","lat":null},"unresolvedEventCount":1,"threatSeverity":20,"fromNodeId":"Turkey","toNodeId":"1","linkType":"dynamic"},{"elementId":"Russia-1","parentId":null,"name":"俄罗斯-->>总部","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"RU-->>总部","lat":null},"unresolvedEventCount":1,"threatSeverity":45,"fromNodeId":"Russia","toNodeId":"1","linkType":"static"},{"elementId":"Russia-1-dynamic","parentId":null,"name":"俄罗斯-->>总部","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"RU-->>总部","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"Russia","toNodeId":"1","linkType":"dynamic"},{"elementId":"Egypt-1","parentId":null,"name":"埃及-->>总部","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"埃及-->>分支1","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"Egypt","toNodeId":"2","linkType":"static"},{"elementId":"United States of America-1","parentId":null,"name":"美国-->>总部","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"United States of America-->>总部","lat":null},"unresolvedEventCount":122,"threatSeverity":90,"fromNodeId":"United States of America","toNodeId":"1","linkType":"dynamic"},{"elementId":"Australia-3","parentId":null,"name":"澳大利亚-->>分支2","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"澳大利亚-->>分支2","lat":null},"unresolvedEventCount":1,"threatSeverity":23,"fromNodeId":"Australia","toNodeId":"3","linkType":"dynamic"},{"elementId":"Australia-2","parentId":null,"name":"澳大利亚-->>分支1","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"澳大利亚-->>分支1","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"Australia","toNodeId":"2","linkType":"static"},{"elementId":"5-5","parentId":null,"name":"分支4-->>分支4","type":"AttackLink","topoTipInfo":null,"needTooltip":true,"userPropertites":{"lon":null,"TOPOELEM_ENGLISH_TITLE":"分支4-->>分支4","lat":null},"unresolvedEventCount":1,"threatSeverity":0,"fromNodeId":"5","toNodeId":"5","linkType":"static"}]';
 		var regionJson = JSON.parse(regionJson1);
 		var valu = 0;
@@ -333,7 +333,7 @@
 			 insertData();
 			setInterval( playan,5000);
 			setInterval(insertData,1000);
-			
+
 	    });
 		function initfullscreen()
 		{
@@ -345,26 +345,24 @@
 		}
 		function init()
 		{
-			 bindToolBarClickEvent();
+			 // bindToolBarClickEvent();
 			 updateRefreshTime();
 			 registerImage();
 			 initNetWork();
 			 //showRegionView();
 			 loadMapData ();
-			 initThreatLevel();
-			 initTopRiskAsset();
-			 initTopRiskCountry();
-			 initTopRiskRegion();
-			 initTable();
-			 initToolBarButton();
-			 initToolBar();
+			 // initThreatLevel();
+			 // initTopRiskAsset();
+			 // initTopRiskCountry();
+			 // initTopRiskRegion();
+			 // initTable();
 			 initContinent();
 			//view.appendChild(div);
 		}
-		
+
 	function ringChartController($scope) {
 	    $scope.threatScore = 45;
-	    
+
         $scope.options = {
             showText: true,
 			//backgroundColor:'red',
@@ -376,71 +374,14 @@
 		//$scope.options.backgroundColor ="white";
 		$scope.options.backgroundColor = "#FBF7F7";
 	    $scope.options.ringWidth = "15";
-  
+
 	}
-	
+
 	function updateRefreshTime() {
 		var nowTime = formateTime(new Date(), "yyyy-MM-dd hh:mm:ss");
 		$("#refreshTimeValue").html(nowTime);
 	}
-	
-		function initToolBarButton()
-		{
-			document.body.appendChild(toolBarButtonView);
-			toolBarButtonNetWork.adjustBounds({x:5,y:7,width:40, height:40});
-			toolBarButtonNetWork.getView().style.backgroundColor = 'rgba(1,1,1,0.1)';//背景颜色
-			//toolBarNetWork.getView().style.backgroundColor = 'white';
-			toolBarButtonNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-			
-			var div = document.getElementById("toolbarButtonDiv");
-			toolBarButtonView.appendChild(div);
-			
-			document.body.appendChild(changeZoomView);
-			changeZoomNetWork.adjustBounds({x:5,y:50,width:25, height:95});
-			changeZoomNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-			changeZoomNetWork.getView().style.backgroundColor = '#0D3B4D';
-			var zoomDiv = document.getElementById("changeZoomDiv");
-			changeZoomView.appendChild(zoomDiv);
-		}
-		
-		function initToolBar()
-		{
-			document.body.appendChild(toolBarView);
-			//viewBounds
-			toolBarNetWork.adjustBounds({x:30,y:5,width:viewBounds.width-300, height:40});
-			toolBarNetWork.getView().style.backgroundColor = 'rgba(1,1,1,0.1)';//背景颜色
-			//toolBarNetWork.getView().style.backgroundColor = 'white';
-			toolBarNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-			 
-			 var div = document.getElementById("toolbarDiv");
-			 toolBarView.appendChild(div);
-			 toolBarNetWork.addInteractionListener(function(e)
-			 {
-				if(e.element.getImage()== "toolbar_image")
-				{
-					//console.log(e.element);
-					//console.log(toolBarNetWork.getElementAt(e));
-					
-				}
-			 });
-			// toolBarNetWork.getView().addEventListener('mousedown', function (e) { var point = toolBarNetWork.getLogicalPoint(e); console.log(point); });
-		}
-		
-		function operateToolBar()
-		{
-			if(toolbarClick)
-			{
-				document.body.removeChild(toolBarView);
-				toolbarClick  = false;
-			}
-			else
-			{
-				//initToolBar();
-				document.body.appendChild(toolBarView);
-				toolbarClick  = true;
-			}
-		}
-		
+
 		function initThreatLevel()
 		{
 			  document.body.appendChild(threatLevelView);
@@ -449,7 +390,7 @@
 			  threatLevelNetWork.setDragToPan(false);//设置network是否可以拖拽移动
 			  var div = document.getElementById("threatLevelPanel");
 			  threatLevelView.appendChild(div);
-		}		
+		}
 		function initTopRiskAsset()
 		{
 		  document.body.appendChild(topRiskAssetBoxView);
@@ -457,7 +398,7 @@
 		  topRiskAssetBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
 		  topRiskAssetBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
 		  var div = document.getElementById("topRiskAsset");
-		 
+
 		  for(var i=5;i>=1;i--)
 		  {
 			 var node = new twaver.Node();
@@ -471,16 +412,16 @@
 			  node1.setImage('gradient2');
 			  node1.setLocation(10,20+(6-i)*38);
 			  node1.setClient('c_width',i*40*0.75);
-			  node1.setClient("c_color",getColor(i*20)); 
+			  node1.setClient("c_color",getColor(i*20));
 			  node1.setClient('c_name',"region"+i);
 			  node1.setClient('c_score',i*20);
 			  node1.setMovable(false);
 			  topRiskAssetBox.add(node1);
 		  }
 		  topRiskAssetBoxView.appendChild(div);
- 
+
 		}
-		
+
 		function initTopRiskCountry()
 		{
 		  document.body.appendChild(topRiskCountryBoxView);
@@ -488,10 +429,10 @@
 		  topRiskCountryBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
 		  topRiskCountryBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
 		  var div = document.getElementById("topRiskCountry");
-		 
+
 		  var j = 5;
 		  var highestCountry = 500;
-		  topRiskCountryBoxNetWork.getView().addEventListener('mousedown', function (e) { var point = topRiskCountryBoxNetWork.getLogicalPoint(e); console.log(point); });	
+		  topRiskCountryBoxNetWork.getView().addEventListener('mousedown', function (e) { var point = topRiskCountryBoxNetWork.getLogicalPoint(e); console.log(point); });
 		  for(var i=1;i<=5;i++)
 		  {
 			  var eventNub = (6-i)*100;
@@ -516,9 +457,9 @@
               j--;
 
 		  }
-		  topRiskCountryBoxView.appendChild(div);  
+		  topRiskCountryBoxView.appendChild(div);
 		}
-		
+
 		function initTopRiskRegion()
 		{
 			  document.body.appendChild(topRiskRegionBoxView);
@@ -526,7 +467,7 @@
 			  topRiskRegionBoxNetWork.getView().style.backgroundColor = 'rgba(2,10,24,0.5)';//背景颜色
 			  topRiskRegionBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
 			  var div = document.getElementById("topRiskRegion");
-		 
+
 			var node1 = new twaver.Node();
 			node1.setImage('gradient5');
 			node1.setLocation(55,50);
@@ -535,7 +476,7 @@
 			node1.setClient('c_name',regions[4]);
 			node1.setClient('c_num',100);
 			topRiskRegionBox.add(node1);
-			
+
 			var node2 = new twaver.Node();
 			node2.setImage('gradient5');
 			node2.setLocation(135,50);
@@ -544,7 +485,7 @@
 			node2.setClient('c_name',regions[3]);
 			node2.setClient('c_num',80);
 			topRiskRegionBox.add(node2);
-			
+
 			var node3 = new twaver.Node();
 			node3.setImage('gradient5');
 			node3.setLocation(150,115);
@@ -553,7 +494,7 @@
 			node3.setClient('c_name',regions[2]);
 			node3.setClient('c_num',60);
 			topRiskRegionBox.add(node3);
-			
+
 			var node4 = new twaver.Node();
 			node4.setImage('gradient5');
 			node4.setLocation(93,140);
@@ -562,7 +503,7 @@
 			node4.setClient('c_name',regions[1]);
 			node4.setClient('c_num',40);
 			topRiskRegionBox.add(node4);
-			
+
 			var node5 = new twaver.Node();
 			node5.setImage('gradient5');
 			node5.setLocation(40,120);
@@ -572,10 +513,10 @@
 			node5.setClient('c_num',20);
 			topRiskRegionBox.add(node5);
 
-			topRiskRegionBoxView.appendChild(div);					  
+			topRiskRegionBoxView.appendChild(div);
 		}
 	var theatNames =["DGA恶意域名访问","外部渗透…+…数据泄露","DGA恶意域名请求","DGA恶意域名请求","端口扫描","PING数据通道","DNS数据通道","HTTP数据通道","恶意文件下载","文件外发","违背关键资产开放端口策略"];
-var assetNames=['172.168.5.1，Hostname="jack.pc",员工"Jack"，工号为“00964691”','感染钓鱼邮件：IP"100.18.21.79"，Hostname="Tom.pc",员工"Tom"，被渗透IP：88.17.21.58,88.18.21.59,88.19.21.60,88.20.21.59,88.21.21.60,89.18.21.79,90.17.21.58被泄露数据IP：88.17.21.1（文件服务器），88.17.21.2（邮件服务器）','172.168.5.2，Hostname="jack.pc",员工"Jack"，工号为“00964693”','172.168.5.3，Hostname="mary.pc",员工"Mary"，工号为“00964694”','172.168.5.5，Hostname="suny.pc",员工"Suny"，工号为“00964695”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','100.168.5.7，Hostname="joy.pc",员工"Joy"，工号为“00964697','100.168.5.8，Hostname="bob.pc",员工"Bob"，工号为“00964697”','100.168.5.9，Hostname="bill.pc",员工"Bill"，工号“00964697”','100.168.5.10，Hostname="dannie.pc",员工"Dannie"，工号为“00964698”','101.168.5.100，Hostname="Fin_dept.pc",资产名称=“财务部服务器”'];	
+var assetNames=['172.168.5.1，Hostname="jack.pc",员工"Jack"，工号为“00964691”','感染钓鱼邮件：IP"100.18.21.79"，Hostname="Tom.pc",员工"Tom"，被渗透IP：88.17.21.58,88.18.21.59,88.19.21.60,88.20.21.59,88.21.21.60,89.18.21.79,90.17.21.58被泄露数据IP：88.17.21.1（文件服务器），88.17.21.2（邮件服务器）','172.168.5.2，Hostname="jack.pc",员工"Jack"，工号为“00964693”','172.168.5.3，Hostname="mary.pc",员工"Mary"，工号为“00964694”','172.168.5.5，Hostname="suny.pc",员工"Suny"，工号为“00964695”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','100.168.5.7，Hostname="joy.pc",员工"Joy"，工号为“00964697','100.168.5.8，Hostname="bob.pc",员工"Bob"，工号为“00964697”','100.168.5.9，Hostname="bill.pc",员工"Bill"，工号“00964697”','100.168.5.10，Hostname="dannie.pc",员工"Dannie"，工号为“00964698”','101.168.5.100，Hostname="Fin_dept.pc",资产名称=“财务部服务器”'];
 var srcIp =['"远控IP：195.22.28.199（葡萄牙）195.22.28.198（葡萄牙）195.22.28.197（葡萄牙）195.22.28.196（葡萄牙','恶意邮件钓鱼服务器：38.102.150.27（美国）C&C远控IP：38.102.150.27（美国）104.244.14.252（美国）208.100.26.234（美国）数据泄露接收服务器46.101.184.102(德国)','远控IP：38.102.150.27（美国）104.244.14.252（美国）208.100.26.234（美国）','远控IP:221.8.69.25 (中国长春）','远控IP:221.8.69.25 (中国长春）','扫描者：100.168.5.4（总部）','隐蔽通道接收端IP：8.9.67.2（美国）','隐蔽通道接收端IP：8.9.67.3（美国）','数据接收端IP：8.9.67.4（美国）','恶意文件来源：10.111.1.1（英国）','文件外发接收者：8.9.67.4','文件外发接收者：8.9.67.4','非法访问者：195.22.26.248'];
 var regionNames=['总部','分支1 分支2 分支3','分支4','分支6','分支1','分支1','分支1','分支3','分支1','分支3','分支1'];
 var countryNames=['葡萄牙','美国','美国','中国','总部','美国','美国','美国','英国','英国','非法访问者'];
@@ -611,7 +552,7 @@ function insertData()
 			}
 			from1.setClient('status', sta);
             alarmBox.add(from1);
-	
+
 	}
 	if(valu<6)
 	{
@@ -621,194 +562,9 @@ function insertData()
 	{
 	    valu =0;
 	}
-	
+
 }
-	
-	function initTable() {
-			document.body.appendChild(alarmBoxView);
-			
-			alarmBoxNetWork.adjustBounds({x:viewBounds.width-1070,y:viewBounds.height-250,width:1030, height:250});
-			alarmBoxNetWork.getView().style.backgroundColor = 'rgba(3,11,25,0.5)';//背景颜色
-			alarmBoxNetWork.setDragToPan(false);//设置network是否可以拖拽移动
-			var div = document.getElementById("attckDetailPanel");
-			alarmBoxView.appendChild(div);
-		  //var view = network.getView();
-		  // table.setRowLineColor('rgba(255,0,0,0.5)');attckDetailPanel
-		  var tableHeader = tablePane1.getTableHeader().getView();
-		  var tbHeader = tablePane1.getTableHeader();
-		  tbHeader.setColumnLineColor('black');
-		  tableHeader.style.backgroundColor = 'rgba(34,47,77,0.4)';
-		  tableDom1.style.position = 'absolute';
-		  tableDom1.style.bottom = '0px';
-		   tableDom1.style.right = '0px';
-		  tableDom1.style.width = "1020px";
-		  tableDom1.style.height = "220px";
-		  tablePane1.getTableHeader().setHeight(32); 
-		  //tablePane.getView().setHeight(32); 
-		  // tableDom.style.backgroundColor = 'rgba(255,0,0,1)';
-		  // document.body.appendChild(tableDom);select.color setRowLineWidth 
-		  table.setRowHeight(34); //设置行高
-		  table.setRowLineColor("rgba(7,16,33,0.1)"); 
-		  table.setRowLineWidth(0.1); 
-		  table.setEditable(true); 
-		  table.setFocusOnClick (false);
-		  table.isMakeVisibleOnSelected(true); 
-		  
-		 /* table.updateCurrentEditor=function(e)
-		  {
-			//alert(123);
-			var ad = table.getDataAt(e);
-			//console.log(ad);
-			var column = table.getColumnAt(e);
-			//console.log(column.getName());
-			var sele = table.getSelectColor();
-			//console.log(sele);
-			//console.log(table.isMakeVisibleOnSelected()); 
-			if(column.getName()=="操作")
-			{
-				console.log(column.getName());
-			}
-		  }*/
-		  
-		  table.getView().onmousedown = null;
-		  alarmBoxView.appendChild(tableDom1);
-		  window.onresize = function () {
-			tablePane1.invalidate();
-		  }
-		 var columwidth = 190;
-  var timewidth = 140;
-		  //createColumn(table, 'SN', 'sn', 'client', 'i',70);
-	  //威胁等级
-	  createColumn(table, '威胁等级', 'threatlevel', 'client', 'i');
-	  //'威胁名称'
-	  createColumn(table, '威胁名称', 'attname', 'client','string',columwidth);
-	  
-	  //'受攻击ip'
-	  createColumn(table, '受威胁IP', 'onthreatip', 'client','string',columwidth);
-	  //'受攻击用户'
-	  createColumn(table, '受威胁用户', 'onthreatuser', 'client','string',columwidth);
-	  //'受攻击区域'
-	  createColumn(table, '受威胁区域', 'onthreatregion', 'client','string',columwidth);
-	   //威胁源IP
-	  createColumn(table, '威胁源IP', 'sourceip', 'client','string',columwidth);
-	   //'威胁源国家/区域'
-	  createColumn(table, '威胁源国家', 'sourcecountry', 'client','string',columwidth);
-	  //'威胁源国家/区域'
-	  createColumn(table, '发生时间', 'occtime', 'client','string',timewidth);
-	  //'状态'
-	  createColumn(table, '状态', 'status', 'client','string',columwidth);
-	  //'状态'
-	  createColumn(table, '操作', 'operate', 'accessor','image',columwidth);
-		//威胁等级，威胁名称，受威胁IP 受威胁区域，最近发生时间，持续时间，检测时间，处理状态，操作
-		table.getSelectColor = function() {
-			 return "#235F8A";
-		}
-		table.onCellRendered = function (params) {
-				//console.log(table,getSelectColor());
-				var div = params.div;
-				var data = params.data;
-				var level = data.getClient("level");
-				var color = 'rgba(41,255,0,1)';
-				if(null!=level)
-				{
-					color = "#2FD6FF";
-				}
-				div.style.color = color;
-				//div.style.color = '#CFCFCF';
-				div.style.textAlign = 'center';
-				div.style.border = 'none';
-				/*div.style.borderStyle = 'none';
-				div.style.borderTopStyle = 'none';
-				div.style.borderBottomStyle = 'none';
-				div.style.borderLeftStyle = 'none';
-				div.style.borderRightStyle = 'none';
-				var cssText = div.style.cssText;
-				
-				div.style.cssText = cssText.replace("solid","none");*/
-				if(params.rowIndex && params.rowIndex%2 === 1){
-				  div.style.backgroundColor = 'rgba(34,47,77,0.4)'; //设置表头的背影颜色
-				}else{
-					div.style.backgroundColor = 'rgba(7,16,33,0.1)'; //设置表头的背影颜色
-				}
-				if(params.column.getName() === '操作'){
-					var image = new Image(); 
-					image.src = "./image/operate.png";
-					image.id = data.getClient("sn");
-					image.style.marginTop="10px";
-					image.style.cursor="pointer";
-					image.onclick = function(e)
-					{
-						//alert(JSON.stringify(e));
-						console.log(e.target.id);
-					}
-					div.appendChild(image);
-				}
-				else if(params.column.getName() === '威胁等级')
-				{
-					var image = new Image(); 
-					
-					var level = data.getClient("level");
-					image.style.marginTop="10px";
-					//image.style.cursor="pointer";
-					if(level==1)
-					{
-						image.src ="./image/lower_toolbar.png"; 
-					}
-					else if(level==2)
-					{
-						image.src =  "./image/low_toolbar.png"; 
-					}
-					else if(level==3)
-					{
-						image.src =  "./image/middle_toolbar.png"; 
-					}
-					else if(level==4)
-					{
-						image.src = "./image/high_toolbar.png";  
-					}
-					else
-					{
-						image.src = "./image/higher_toolbar.png";   
-					}	
-					div.appendChild(image);
-				}
-			  };
 
-		  table.setMakeVisibleOnSelected(false);
-		  table.getSelectionModel().addSelectionChangeListener(function(e) { 
-
-		});
-		}
-
-	function createColumn(table, name, propetyName, propertyType, valueType,width) {
-	  var column = new twaver.Column(name);
-	  column.setName(name);
-	  column.setPropertyName(propetyName);
-	  column.setPropertyType(propertyType);
-	  if (valueType) {
-		column.setValueType(valueType);
-	  }
-	  width && column.setWidth(width);
-	  // column.setFontColor(randomColor());
-	  column.renderHeader = function (div) {
-		var span = document.createElement('span');
-		span.style.whiteSpace = 'nowrap';
-		span.style.verticalAlign = 'middle';
-		span.style.padding = '1px 2px 1px 2px';
-		span.innerHTML = column.getName() ? column.getName() : column.getPropertyName();
-		span.setAttribute('title', span.innerHTML);
-		// span.style.backgroundColor = 'rgba(0,0,0,0)';
-		span.style.font = 'bold 12px Helvetica';
-		div.style.textAlign = 'center';
-		div.style.color = '#00AAFF';
-		div.style.backgroundColor = 'rgba(0,0,0,0)';
-		div.appendChild(span);
-	  };
-
-	  table.getColumnBox().add(column);
-	  return column;
-	}
-	
 	/*
 	*计算当前网页相对于全屏百分比
 	*/
@@ -819,14 +575,14 @@ function insertData()
 		var screenHeight = window.screen.height;
 	  	var screenWidth = window.screen.width;
 	}
-	
+
 		function initNetWork()
 		{
-			
+
 	  		  var width = document.documentElement.scrollWidth;
 	  		  var scrollHeight = document.documentElement.scrollHeight;
   			  //var height = document.documentElement.clientHeight;
-  			  
+
 		      var height = 0.75*window.screen.height;
 		  	  viewBounds = {x:0,y:2,width:width, height:height};
 		  	  console.log(viewBounds);
@@ -908,9 +664,9 @@ function insertData()
 			  //box.setStyle('background.image.stretch','fill');
 			  twaver.Styles.setStyle('select.style', 'none');//设置选中的样式
 			 // network.getView().appendChild(dom);
-			  
+
 			  network.addInteractionListener(function(e){
-					
+
 				   if("clickElement"===e.kind)
 					{
 						var node = network.getElementAt(e);
@@ -922,11 +678,11 @@ function insertData()
 							{
 								location.href="./regionmap.html?map=china";
 				//                alarmInRegionBox.clear();//清空区域钻取box
-								
+
 								/*console.log(111)
 								alarmBoxView.removeChild(tableDom1);
 								document.body.removeChild(alarmBoxView);
-								
+
 								document.body.removeChild(view);
 								document.body.removeChild(threatLevelView);
 								document.body.removeChild(topRiskAssetBoxView);
@@ -938,7 +694,7 @@ function insertData()
 						}
 						else if(node instanceof twaver.Link)
 						{
-						
+
 							if(node.getClient("link.color")=="#DD1000")
 							{
 								//parent.location.href=".././CIS_H/威胁分析-查看详情.html#TAB_INIT=1&LANG=EN&CSUM=1";
@@ -950,10 +706,10 @@ function insertData()
 								//parent.location.href=".././CIS_H/普通威胁分析-查看详情.html#TAB_INIT=1&LANG=EN&CSUM=1";
 							}
 						}
-					 } 
-				   
+					 }
+
 				 });
-				 	 
+
 			 network.getView().addEventListener('mousemove', function(e){
 				var target = network.getElementAt(e);
 				if(target instanceof twaver.Link && target.getClient('link.type') === 'flowLink') {
@@ -1053,7 +809,7 @@ function insertData()
 
 	function _loadData (json) {
 	  JSON.parse(json).features.forEach(function (feature) {
-		
+
 		//每一个国家实质上就是一个ShapeNode
 		var node = new twaver.ShapeNode(feature.id);
 		dataBox.add(node);
@@ -1147,9 +903,9 @@ function insertData()
 			.setStyle('vector.gradient', 'radial.center')
 		    .setStyle('vector.gradient.color', '#072E27');
 			oceaniaBox.add(node);
-			 
+
 		}
-		
+
 	  });
 	  var oceaniaCountry = oceaniaBox.getDataById("AU");
 	  console.log(oceaniaCountry.getCenterLocation ());
@@ -1172,7 +928,7 @@ function insertData()
 		 toolBarNode.setMovable(false);
 		 toolBarNode.setToolTip("过滤条件");
 		 //toolBarNode.s("cursor","pointer");
-		// node.setLayerId('link');getStyleProperties 
+		// node.setLayerId('link');getStyleProperties
 		//console.log(toolBarNode.s("cursor"));
 		//console.log(123);
 		 box.add(toolBarNode);*/
@@ -1228,12 +984,12 @@ function insertData()
 				}
 			}
 		}
-    	
+
     }
-	
+
 	function doAnimate()
 	{
-		for ( var i = 0; i < attackCache.length; i++) 
+		for ( var i = 0; i < attackCache.length; i++)
 		{
 			if(nodeCache[attackCache[i].elementId])
 			{
@@ -1265,7 +1021,7 @@ function insertData()
 					  unvisbleNodeCache[fromNodeId] = fromNode;
 					  box.add(fromNode);
 				}
-				
+
 				if(unvisbleNodeCache[toNodeId])
 				{
 					toNode = unvisbleNodeCache[toNodeId];
@@ -1282,9 +1038,9 @@ function insertData()
 					  toNode.setCenterLocation(toCenter.x, toCenter.y);
 				      //unvisbleNodeCache.push(toNode);
 				      unvisbleNodeCache[toNodeId] = toNode;
-				      box.add(toNode);	
+				      box.add(toNode);
 				}
-			      
+
 			      var colors = randomColor({luminosity: 'orange',count: 10});
 			        var link;
 					if(fromNodeId == toNodeId)
@@ -1304,7 +1060,7 @@ function insertData()
 					link.setClient('tail',25);
 					link.setClient('tailRadius',3);
 					//设置线条为动态线还是静态线tailRadius
-					
+
 					link.setClient('linkType',attackCache[i].linkType);
 					link.setClient('link.color',getColor(attackCache[i].threatSeverity));
 					link.setClient('link.type','flowLink');
@@ -1317,7 +1073,7 @@ function insertData()
 					link.s('arrow.from',false);
 					link.s('arrow.from.shape','arrow.tail');
 					link.s('arrow.from.shadow',true);
-					
+
 					link.s('arrow.from.shadow.blur',1);
 					link.s('arrow.from.shadow.color',getColor(attackCache[i].threatSeverity));
 					link.s('arrow.from.color',getColor(attackCache[i].threatSeverity));
@@ -1327,7 +1083,7 @@ function insertData()
 					link.s('arrow.to.at.edge',false);
 					link.s('arrow.to.color',getColor(attackCache[i].threatSeverity));
 					//link.s("link.join","round");
-					
+
 					//攻击源为区域的时候需要做偏移
 					if(fromOldNode.getClient("node_type")=="RegionNode")
 					{
@@ -1340,7 +1096,7 @@ function insertData()
 						else
 						{
 							link.s("link.to.xoffset",-10);
-						}	
+						}
 					}
 					else
 					{
@@ -1351,7 +1107,7 @@ function insertData()
 						else
 						{
 							link.s("link.to.xoffset",-16);
-						}	
+						}
 					}
 					link.setAnimate(3000);
 					if(attackCache[i].linkType == "static")
@@ -1365,9 +1121,9 @@ function insertData()
 			}
 		}
 	}
-	
+
 	function doOnResize()
-	{ 
+	{
 		 var width = document.documentElement.scrollWidth;
 		 var height = window.innerHeight;
 		 //var height = 0.75*window.screen.height;
@@ -1400,18 +1156,18 @@ function insertData()
 		  tableWidth = viewBounds.width*2/3;
 		  var alarmBoxBounds={x:viewBounds.width-tableWidth,y:viewBounds.height-250,width:tableWidth, height:250};
 		  alarmBoxNetWork.adjustBounds(alarmBoxBounds);
-		  tablePane1.adjustBounds({x:0,y:30,width:alarmBoxBounds.width-8,height:alarmBoxBounds.height - 30}); 
+		  tablePane1.adjustBounds({x:0,y:30,width:alarmBoxBounds.width-8,height:alarmBoxBounds.height - 30});
 		  var timewidth = 135;
 	      var columwidth =(alarmBoxBounds.width-8-timewidth*1)/9;
 		   table.getColumnBox().getDatas().forEach(function(e)
-		   { 
+		   {
 				if(e.getPropertyName().indexOf("time")!=-1)
 				{
-					e.setWidth(timewidth);	
+					e.setWidth(timewidth);
 				}
 				else
 				{
-					e.setWidth(columwidth);	
+					e.setWidth(columwidth);
 				}
 		   });
 		   resizeNodeLocate();
@@ -1420,19 +1176,19 @@ function insertData()
 		 // tableDom1.style.width = alarmBoxBounds.width-8;
 		  //tableDom1.style.height = alarmBoxBounds.height - 30;
 	}
-	
+
 	function adjustConNetWork(data)
 	{
 		var continentWidth = data.width*1/5;
 		var continentHeight = data.height*1/4;
 		//以1680*1050分辨率的屏幕为标准，各大洲的缩放比例以该值为标准
 		var zoom = 0.5*(data.width*data.height)/(1680*1050);
-		
+
 		//北美
 		northAmericaNetWork.setZoom(zoom);
 		northAmericaNetWork.adjustBounds({x:0,y:2,width:continentWidth, height:continentHeight});
 		northAmericaNetWork.centerByLogicalPoint(zoom*389,zoom*233);
-		
+
 		//南美
 		southAmericaNetWork.setZoom(zoom);
 		southAmericaNetWork.adjustBounds({x:0,y:continentHeight,width:continentWidth, height:continentHeight});
@@ -1467,7 +1223,7 @@ function insertData()
 		//height:600px;width: 800px;position:absolute;margin-left: 300px;margin-top: 20px
 		myChart.resize();
 	}
-	
+
 	function initContinent()
 	{
 		continentName = ['<s:text name="cis.web.config.home.map.northamerica"/>',
@@ -1505,7 +1261,7 @@ function insertData()
 			box.add(continentNode);
 		}
 	}
-	
+
 	function initContinentLocate(data)
 	{
 		var northX = data.width*170/1680;
@@ -1546,11 +1302,11 @@ function playan()
 		var min = 0;
 
 		window.requestAnimFrame = (function(){
-			return  window.requestAnimationFrame       || 
-			window.webkitRequestAnimationFrame || 
-			window.mozRequestAnimationFrame    || 
-			window.oRequestAnimationFrame      || 
-			window.msRequestAnimationFrame     || 
+			return  window.requestAnimationFrame       ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame    ||
+			window.oRequestAnimationFrame      ||
+			window.msRequestAnimationFrame     ||
 			function(callback, element){
 			  window.setTimeout(callback, 1000/60);
 			};
@@ -1561,24 +1317,24 @@ function playan()
 		  var then = Date.now();
 		  var interval = 1200/fps;
 		  var delta;
-		
+
 		  function animate() {
 			handle = requestAnimFrame(animate);
 			now = Date.now();
 			delta = now - then;
 			if (delta > interval) {
 			  then = now - (delta % interval);
-			  draw(); 
+			  draw();
 			}
 		  }
-		  function draw() {  
+		  function draw() {
 			flowLinks.forEach(function(link){
 			  link.playAnimate();
 			});
 		  }
 		 draw();
 }
-	
+
        </script>
    </body>
 </html>
