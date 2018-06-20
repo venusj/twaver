@@ -1,63 +1,120 @@
-
-/**
- *  继承twaver.Link,重写实现了流动link样式
- */
- function FlowLink () {
+function FlowLink () {
   FlowLink.superClass.constructor.apply(this, arguments);
-  var self = this;
-  this.animate = new twaver.Animate({
-    from: 0,
-    to: 1,
-    repeat: 1,
-    reverse: false,
-    delay:0,
-    dur: 2000,
-    onUpdate: function (value) {
-      self.setClient('percent',value);
-      network.invalidateElementUIs();
-    },
-    onDone: function () {
-      self.setClient('tail',2);
-      var box = self.getClient('box');
-      if(!box) return;
-      var toNode = self.getToNode();
-      var nNode = new twaver.Node({
-        image:'circle',
-        width: 100,
-        height: 100,
-        location:toNode.getLocation(),
-        clients:{
-          'depository':'depository',
-          'color': 'red',
-          'radius': 100,
-        }
-      });
-      box.add(nNode);
-      box.remove(self);
-    }
-  });
 }
 
 twaver.Util.ext(FlowLink, twaver.Link, {
+  curentTime:function(){ 
+    var now = new Date();
+    var year = now.getFullYear();       
+    var month = now.getMonth() + 1;     
+    var day = now.getDate();            
+    var hh = now.getHours();            
+    var mm = now.getMinutes();          
+
+    var clock = year + "-";
+
+    if(month < 10)
+      clock += "0";
+
+    clock += month + "-";
+
+    if(day < 10)
+      clock += "0";
+
+    clock += day + " ";
+
+    if(hh < 10)
+      clock += "0";
+
+    clock += hh + ":";
+    if (mm < 10) clock += '0'; 
+    clock += mm; 
+    return(clock); 
+  } ,
   getVectorUIClass: function() {
     return FlowLinkUI;
   },
-  playAnimate:function(){
-    var fromNode = this.getFromNode();
-    var fNode = new twaver.Node({
-      image:'circle',
-      width: 100,
-      height: 100,
-      location:fromNode.getLocation(),
-      clients:{
-        'depository':'depository',
-        'color': 'green',
-        'radius': 100,
+  playAnimate:function(dur){
+    var time = this.curentTime();
+    this.setClient('time',time);
+    this.animate.play();
+  },
+  setAnimate:function(dur) {
+    var dur = dur || 1200;
+    var self = this;
+    var fNode, tNode;
+	
+    this.animate = new twaver.Animate({
+      from: 0,
+      to: 0.96,
+      repeat: 1,
+	  //repeat: Number.POSITIVE_INFINITY,
+      reverse: false,
+      dur: dur,
+      onPlay: function() {
+        var box = self.getClient('box');
+        if(!box) return;
+        var fromNode = self.getFromNode();
+        var fl = fromNode.getLocation();
+        var color = self.getStyle('arrow.from.shadow.color');
+        fNode = new twaver.Node({
+          image:'circle',
+          width:100,
+          height:100,
+          location:{x:fl.x ,y:fl.y},
+          clients:{
+            'depository':'depository',
+            'color': color,
+            'radius': 100,
+          }
+        });
+       // box.add(fNode);
+        self.s('arrow.from',true);
+      },
+      onUpdate: function (value) {
+		 /* if(fromNode.getId()==toNode.getId())
+		  {
+			 self.setClient('percent', value);
+			if(value >= 1) self.setClient('over',true);
+			else self.setClient('over',false); 
+		  }
+		  else
+		  {
+			  
+		  }*/
+		self.s('arrow.from.xoffset',value);
+        network.invalidateElementUIs();
+      },
+      onDone: function () {
+        self.s('arrow.from',false);
+        var box = self.getClient('box');
+
+        if(!box) return;
+        var toNode = self.getToNode();
+        var tl = toNode.getLocation();
+		 var color = self.getStyle('arrow.from.shadow.color');
+		//动态线显示完成后立即删除
+		/*if(self.getClient("linkType")=="dynamic")
+		{
+			box.removeById(self.getId()); 
+		}
+		*/
+        tNode = new twaver.Node({
+          image:'circle',
+          width:75,
+          height:75,
+          location:{x:tl.x+12,y:tl.y+12},
+          clients:{
+            'depository':'depository',
+            'color': color,
+            'radius': 75,
+          }
+        });
+        box.add(tNode);
+        box.remove(fNode);
       }
     });
-    box.add(fNode);
-    this.animate.play();
-  }
+}
 });
 
 function FlowLinkUI () {
@@ -65,31 +122,42 @@ function FlowLinkUI () {
 }
 
 twaver.Util.ext(FlowLinkUI, twaver.vector.LinkUI, {
-  validateImpl:function() {
-    FlowLinkUI.superClass.validateImpl.call(this);
-  },
-  paintBody: function (ctx) {
-    var link = this.getElement();
-    if (link.getClient('show')) {
+    paintBody: function (ctx) {
       FlowLinkUI.superClass.paintBody.call(this, ctx);
-    }
-    var fillColor = link.getClient('fillColor');
-    var shadowColor = link.getClient('shadowColor');
-    var tail = link.getClient('tail');
-    var percent = link.getClient('percent');
-    var paths = this.getLinkPoints();
-    var offset = this.getLineLength() * percent;
-    var point;
-    for (var i = 0, count = tail; i < count; i++) {
-      var v = i / count;
-      point = _twaver.math.calculatePointInfoAlongLine(paths, true, offset - (count - i)*2.5, 0).point;
-      ctx.globalAlpha = v * v;
-      ctx.shadowBlur = 5;
-      ctx.shadowColor = shadowColor;
-      ctx.beginPath();
-      ctx.fillStyle = fillColor;
-      ctx.arc(point.x, point.y, 2, 0, Math.PI * 2, false);
-      ctx.fill();
-    }
-  }
-});
+
+      var link = this.getElement();
+      if(link.getClient('over')) return;
+      var fillColor = link.getClient('fillColor');
+      var shadowColor = link.getClient('shadowColor');
+      var tail = link.getClient('tail');
+      var percent = link.getClient('percent');
+      var paths = this.getLinkPoints();
+      var offset = this.getLineLength() * percent;
+      var tailFactor = link.getClient('tailFactor') || 1.5;
+      var tailRadius = link.getClient('tailRadius') || 2;
+      var point;
+
+    /*  for (var i = 0, count = tail; i < count; i++) {
+        var v = i / count;
+        point = _twaver.math.calculatePointInfoAlongLine(paths, true, offset - (count - i)*tailFactor, 0).point;
+        ctx.globalAlpha = v * v;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "red";
+        ctx.beginPath();
+        ctx.fillStyle = "red";
+        ctx.arc(point.x, point.y, tailRadius, 0, Math.PI * 2, false);
+        ctx.fill();
+      }
+	for (var i = 0, count = tail; i < count; i++) {
+        var v = i / count;
+        point = _twaver.math.calculatePointInfoAlongLine(paths, true, offset - (count - i)*1, 0).point;
+        ctx.globalAlpha = v * v;
+        ctx.shadowBlur = 1;
+        ctx.shadowColor = shadowColor;
+        ctx.beginPath();
+        ctx.fillStyle = 'white';
+        ctx.arc(point.x, point.y, 1, 0, Math.PI * 2, false);
+        ctx.fill();
+      }*/
+   }
+ });

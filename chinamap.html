@@ -5,7 +5,7 @@
    </head>
    <body onload="initfullscreen()" style="height: 100%; margin: 0;">
      <div id="main" style="height:600px;width: 800px;position:absolute;margin-left: 300px;margin-top: 20px"></div>
-     <div id="container" style="height: 100%;background:url('./images/image_china.jpg');background-repeat:no-repeat;background-size:100% 100%;"></div>
+     <div id="container" style="height: 100%;background-repeat:no-repeat;background-size:100% 100%;"></div>
 	 <div id="threatLevelPanel" style="height:250px">
         <div style="font-size:14px;color:#28E1F4;font-weight:900;">全网威胁等级</div>
 		<div name="frameCaption" class=""
@@ -24,11 +24,8 @@
 	<script type="text/javascript" src="./twaver.js"></script>
 	<script type="text/javascript" src="./license.js"></script>
 	<script type="text/javascript" src="./countries.js"></script>
-	<script type="text/javascript" src="./FlowLink2.js"></script>
-	<script type="text/javascript" src="./randomColor.js"></script>
-	<script type="text/javascript" src="./jquery-1.7.2.min.js"></script>
-
-	<script type="text/javascript" src="./regionView.js"></script>
+	<script type="text/javascript" src="./FlowLink.js"></script>
+	<script type="text/javascript" src="./jquery-3.3.1.min.js"></script>
 	<script type="text/javascript" src="./threatmap.js"></script>
     <script type="text/javascript">
 
@@ -207,7 +204,8 @@
 			 updateRefreshTime();
 			 registerImage();
 			 initNetWork();
-			 loadMapData ();
+       // used to load other continents
+			 loadMapData();
 			 initContinent();
 			//view.appendChild(div);
 		}
@@ -440,7 +438,6 @@
 		.setStyle('select.color', '#FFFFFF')
 		.setStyle('vector.outline.width', 0.8);
 		node.setMovable(false);
-		node.setClient('font.color',randomColor());
 		node.setClient('type','');
 		node.setClient('continent',feature.properties.continent);
 		node.setToolTip(feature.properties.name);
@@ -660,9 +657,7 @@
 				      unvisbleNodeCache[toNodeId] = toNode;
 				      box.add(toNode);
 				}
-
-			      var colors = randomColor({luminosity: 'orange',count: 10});
-			        var link;
+			    var link;
 					if(fromNodeId == toNodeId)
 					{
 						link = new FlowLink(attackCache[i].elementId,fromNode, fromNode);
@@ -673,7 +668,8 @@
 						link = new FlowLink(attackCache[i].elementId,fromNode, toNode);
 						link.s('link.width', 1);
 					}
-					var color = colors[0];
+          // fixed color
+					var color = '#f2ba02';
 					link.setLayerId('link');
 					link.setClient('box',box);
 					link.setClient('factor',i);
@@ -735,7 +731,6 @@
 						nodeCache[attackCache[i].elementId] = link;
 					}
 					box.add(link);
-					//link.setClient('font.color',randomColor());
 					flowLinks.add(link);
 					link.playAnimate();
 			}
