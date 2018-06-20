@@ -3,7 +3,6 @@
    <head>
        <meta charset="utf-8">
    </head>
-
    <body onload="initfullscreen()" style="height: 100%; margin: 0;">
      <div id="main" style="height:600px;width: 800px;position:absolute;margin-left: 300px;margin-top: 20px"></div>
      <div id="container" style="height: 100%;background:url('./images/image_china.jpg');background-repeat:no-repeat;background-size:100% 100%;"></div>
@@ -20,47 +19,6 @@
 				</a></li>
 			</ul>
 		</div>
-		<table border="0" cellspacing="0" cellpadding="2" align="center"
-			style="color: white">
-			<tbody>
-				 <tr>
-					<td align="center">
-							<div style="height:130px;width:130px;background:url('./image/chart_45.png');background-repeat:no-repeat;background-size:90% 90%;">
-								<!-- <esight:ring-chart width="130" height="130" data="threatScore"
-									options="options" align="center">
-								</esight:ring-chart> -->
-							</div>
-						</td>
-				</tr>
-				<tr align="center" style="font-size: 10px">
-					<td>
-						<s:text name="nsc.assetRisk.threatLevel"></s:text>
-						<s:text name=":" /><a id="threatLevelValue"
-						href="javascript:void(0);" onclick="jumpToEvent('1')"
-						class="home_threat_level_value" style="font-weight: normal;"></a>
-					</td>
-				</tr>
-				<tr align="center" style="font-size: 10px;height:12px" class="">
-					<td>
-							<span style="font-size:12px;color:#2B9CD5;font-weight:900;">威胁等级：</span> <span style="font-size:12px;color:yellow;font-weight:900;">中</span>
-					</td>
-				</tr>
-				<tr align="center" style="font-size: 10px;height:12px">
-					<td>
-							<span id="refreshTimeValue"
-								style="font-size:12px;color:#2B9CD5;font-weight:600;"></span>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2" height="8px"></td>
-				</tr>
-				<tr align="center" style="font-size: 10px;height:12px">
-					<td>
-							<span style="font-size:12px;color:#2B9CD5;font-weight:600;">安全事件（总）： </span><span style="font-size:12px;color:yellow;font-weight:600;">456|<span style="font-size:12px;color:red;font-weight:600;">860</span>个</span>
-					</td>
-				</tr>
-			</tbody>
-		</table>
 	</div>
 	<script type="text/javascript" src="./echarts/echarts-all.js"></script>
 	<script type="text/javascript" src="./twaver.js"></script>
@@ -233,9 +191,7 @@
 		     init();
 		     window.onresize = doOnResize;
 		     doOnResize();
-			 insertData();
 			setInterval( playan,5000);
-			setInterval(insertData,1000);
 
 	    });
 		function initfullscreen()
@@ -248,13 +204,10 @@
 		}
 		function init()
 		{
-			 // bindToolBarClickEvent();
 			 updateRefreshTime();
 			 registerImage();
 			 initNetWork();
-			 //showRegionView();
 			 loadMapData ();
-			 // initTable();
 			 initContinent();
 			//view.appendChild(div);
 		}
@@ -280,56 +233,6 @@
 		var nowTime = formateTime(new Date(), "yyyy-MM-dd hh:mm:ss");
 		$("#refreshTimeValue").html(nowTime);
 	}
-
-	var theatNames =["DGA恶意域名访问","外部渗透…+…数据泄露","DGA恶意域名请求","DGA恶意域名请求","端口扫描","PING数据通道","DNS数据通道","HTTP数据通道","恶意文件下载","文件外发","违背关键资产开放端口策略"];
-var assetNames=['172.168.5.1，Hostname="jack.pc",员工"Jack"，工号为“00964691”','感染钓鱼邮件：IP"100.18.21.79"，Hostname="Tom.pc",员工"Tom"，被渗透IP：88.17.21.58,88.18.21.59,88.19.21.60,88.20.21.59,88.21.21.60,89.18.21.79,90.17.21.58被泄露数据IP：88.17.21.1（文件服务器），88.17.21.2（邮件服务器）','172.168.5.2，Hostname="jack.pc",员工"Jack"，工号为“00964693”','172.168.5.3，Hostname="mary.pc",员工"Mary"，工号为“00964694”','172.168.5.5，Hostname="suny.pc",员工"Suny"，工号为“00964695”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','172.168.5.6，Hostname="susan.pc",员工"Susan"，工号为“00964696”','100.168.5.7，Hostname="joy.pc",员工"Joy"，工号为“00964697','100.168.5.8，Hostname="bob.pc",员工"Bob"，工号为“00964697”','100.168.5.9，Hostname="bill.pc",员工"Bill"，工号“00964697”','100.168.5.10，Hostname="dannie.pc",员工"Dannie"，工号为“00964698”','101.168.5.100，Hostname="Fin_dept.pc",资产名称=“财务部服务器”'];
-var srcIp =['"远控IP：195.22.28.199（葡萄牙）195.22.28.198（葡萄牙）195.22.28.197（葡萄牙）195.22.28.196（葡萄牙','恶意邮件钓鱼服务器：38.102.150.27（美国）C&C远控IP：38.102.150.27（美国）104.244.14.252（美国）208.100.26.234（美国）数据泄露接收服务器46.101.184.102(德国)','远控IP：38.102.150.27（美国）104.244.14.252（美国）208.100.26.234（美国）','远控IP:221.8.69.25 (中国长春）','远控IP:221.8.69.25 (中国长春）','扫描者：100.168.5.4（总部）','隐蔽通道接收端IP：8.9.67.2（美国）','隐蔽通道接收端IP：8.9.67.3（美国）','数据接收端IP：8.9.67.4（美国）','恶意文件来源：10.111.1.1（英国）','文件外发接收者：8.9.67.4','文件外发接收者：8.9.67.4','非法访问者：195.22.26.248'];
-var regionNames=['总部','分支1 分支2 分支3','分支4','分支6','分支1','分支1','分支1','分支3','分支1','分支3','分支1'];
-var countryNames=['葡萄牙','美国','美国','中国','总部','美国','美国','美国','英国','英国','非法访问者'];
-function insertData()
-{
-	alarmBox.clear();
-	for(var i=valu;i<=valu+4;i++)
-	{
-		var from1 = new twaver.Node({
-                name: 'from',
-				image:"unvisble",
-                location: {
-                    x: 100,
-                    y: 100
-                }
-            });
-			from1.s("select.color","red");
-			from1.setClient('height', 55);
-			from1.setClient('font.color', "#2FD6FF");
-			from1.setClient('level', alaLevel[i]);
-			from1.setClient('sn', i);
-			from1.setClient('attname', theatNames[i]);
-			from1.setClient('onthreatip', assetNames[i]);
-			from1.setClient('onthreatuser', "user"+i);
-			from1.setClient('onthreatregion', regionNames[i]);
-			from1.setClient('occtime', formateTime(new Date(), "yyyy-MM-dd hh:mm:ss"));
-			from1.setClient('sourceip', srcIp[i]);
-			from1.setClient('sourcecountry', countryNames[i]);
-			var sta ="确认为威胁";
-			if(i%2==0)
-			{
-				sta ="新事件";
-			}
-			from1.setClient('status', sta);
-            alarmBox.add(from1);
-
-	}
-	if(valu<6)
-	{
-		valu++;
-	}
-	else
-	{
-	    valu =0;
-	}
-
-}
 
 	/*
 	*计算当前网页相对于全屏百分比
@@ -424,10 +327,6 @@ function insertData()
 
 			  network.getView().style.backgroundColor = 'rgba(1,1,1,0.01)';//背景颜色
 			  network.setDragToPan(false);//设置network是否可以拖拽移动
-			  //network.setBackgroundImage("locate");
-			 // box.setStyle('background.type', 'image');
-			 // box.setStyle('background.image', 'backgroundimage');
-			  //box.setStyle('background.image.stretch','fill');
 			  twaver.Styles.setStyle('select.style', 'none');//设置选中的样式
 			 // network.getView().appendChild(dom);
 
