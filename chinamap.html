@@ -62,8 +62,6 @@
 			</tbody>
 		</table>
 	</div>
-	<script type="text/javascript" src="./table/angular.min.js"></script>
-	<script type="text/javascript" src="./table/esight.ringchart.js"></script>
 	<script type="text/javascript" src="./echarts/echarts-all.js"></script>
 	<script type="text/javascript" src="./twaver.js"></script>
 	<script type="text/javascript" src="./license.js"></script>
@@ -432,51 +430,6 @@ function insertData()
 			  //box.setStyle('background.image.stretch','fill');
 			  twaver.Styles.setStyle('select.style', 'none');//设置选中的样式
 			 // network.getView().appendChild(dom);
-
-			  network.addInteractionListener(function(e){
-
-				   if("clickElement"===e.kind)
-					{
-						var node = network.getElementAt(e);
-						if(node instanceof twaver.Node)
-						{
-							var name = node.getClient("node_name");
-							var type = node.getClient("node_type");
-							if(type==="RegionNode")
-							{
-								location.href="./regionmap.html?map=china";
-				//                alarmInRegionBox.clear();//清空区域钻取box
-
-								/*console.log(111)
-								alarmBoxView.removeChild(tableDom1);
-								document.body.removeChild(alarmBoxView);
-
-								document.body.removeChild(view);
-								document.body.removeChild(threatLevelView);
-								document.body.removeChild(topRiskAssetBoxView);
-								document.body.removeChild(topRiskCountryBoxView);
-								document.body.removeChild(topRiskRegionBoxView);
-
-								initRegionView();*/
-							}
-						}
-						else if(node instanceof twaver.Link)
-						{
-
-							if(node.getClient("link.color")=="#DD1000")
-							{
-								//parent.location.href=".././CIS_H/威胁分析-查看详情.html#TAB_INIT=1&LANG=EN&CSUM=1";
-								window.open(".././CIS_H/威胁分析-查看详情.html#TAB_INIT=1&LANG=CN&CSUM=1");
-							}
-							else
-							{
-								window.open(".././CIS_H/普通威胁分析-查看详情.html#TAB_INIT=1&LANG=CN&CSUM=1");
-								//parent.location.href=".././CIS_H/普通威胁分析-查看详情.html#TAB_INIT=1&LANG=EN&CSUM=1";
-							}
-						}
-					 }
-
-				 });
 
 			 network.getView().addEventListener('mousemove', function(e){
 				var target = network.getElementAt(e);
