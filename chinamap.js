@@ -213,18 +213,17 @@ var screenHeight = window.screen.height;
 }
 
 function initNetWork()
-{
-
+  {
      var width = document.documentElement.scrollWidth;
      var scrollHeight = document.documentElement.scrollHeight;
      //var height = document.documentElement.clientHeight;
 
      var height = 0.75*window.screen.height;
-     viewBounds = {x:0,y:2,width:width, height:height};
-     console.log(viewBounds);
-     console.log( window.screen.height);
-     var screenHeight = window.screen.height;
-     var screenWidth = window.screen.width;
+     viewBounds = {x:0, y:2, width:width, height:height};
+     //console.log(viewBounds); {x: 0, y: 2, width: 1214, height: 810}
+     // window.screen.height
+     var screenHeight = 1000;
+     var screenWidth = 750;
      var netPer = (width*scrollHeight)/(screenWidth*screenHeight)
      var continentHeight = screenHeight*1/5;
      var continentWidth = width*1/5;
@@ -494,7 +493,7 @@ else if(feature.properties.continent == "Oceania")
 
 });
 var oceaniaCountry = oceaniaBox.getDataById("AU");
-console.log(oceaniaCountry.getCenterLocation ());
+// console.log(oceaniaCountry.getCenterLocation ());
 //创建单独的一层，用于放置所有的link，目的是让link置于最上层
 var linkLayer = new twaver.Layer('link');
 //layer由layerBox进行管理，使用方法和DataBox类似
@@ -545,7 +544,6 @@ if(regionJson.length>0)
    node.setLayerId('link');//将node放在linklayer中，防止被覆盖
    //node.setCenterLocation(regionJson[i].locationX,
    //		regionJson[i].locationY);
-   //$("#main").css
    node.setCenterLocation(geoCo[0]+parseInt(marg),geoCo[1]);
       //node.setCenterLocation(859, 212);
    node.setMovable(false);//不可以拖动
@@ -760,51 +758,48 @@ var topoRiskWidth = viewBounds.width/6;
  //tableDom1.style.height = alarmBoxBounds.height - 30;
 }
 
-function adjustConNetWork(data)
-{
-var continentWidth = data.width*1/5;
-var continentHeight = data.height*1/4;
-//以1680*1050分辨率的屏幕为标准，各大洲的缩放比例以该值为标准
-var zoom = 0.5*(data.width*data.height)/(1680*1050);
+function adjustConNetWork(data) {
+  var continentWidth = data.width*1/5;
+  var continentHeight = data.height*1/4;
+  //以1680*1050分辨率的屏幕为标准，各大洲的缩放比例以该值为标准
+  var zoom = 0.5*(data.width*data.height)/(1680*1050);
 
-//北美
-northAmericaNetWork.setZoom(zoom);
-northAmericaNetWork.adjustBounds({x:0,y:2,width:continentWidth, height:continentHeight});
-northAmericaNetWork.centerByLogicalPoint(zoom*389,zoom*233);
+  //北美
+  northAmericaNetWork.setZoom(zoom);
+  northAmericaNetWork.adjustBounds({x:0,y:2,width:continentWidth, height:continentHeight});
+  northAmericaNetWork.centerByLogicalPoint(zoom*389,zoom*233);
 
-//南美
-southAmericaNetWork.setZoom(zoom);
-southAmericaNetWork.adjustBounds({x:0,y:continentHeight,width:continentWidth, height:continentHeight});
-southAmericaNetWork.centerByLogicalPoint(zoom*489,zoom*483);
-//非洲
-africaNetWork.setZoom(zoom);
-africaNetWork.adjustBounds({x:0,y:continentHeight*2,width:continentWidth, height:continentHeight});
-africaNetWork.centerByLogicalPoint(zoom*715,zoom*421);
-//亚洲
-asiaNetWork.setZoom(zoom);
-asiaNetWork.adjustBounds({x:data.width*0.65,y:0,width:continentWidth, height:continentHeight});
-asiaNetWork.centerByLogicalPoint(zoom*960,zoom*324);
-//欧洲
-europeNetWork.setZoom(zoom);
-europeNetWork.adjustBounds({x:data.width*0.65,y:continentHeight,width:continentWidth, height:continentHeight});
-europeNetWork.centerByLogicalPoint(zoom*962,zoom*213);
-//大洋洲
-var oceniaZoom = 0.6*(data.width*data.height)/(1680*1050);
-oceaniaNetWork.setZoom(oceniaZoom);
-oceaniaNetWork.adjustBounds({x:data.width*0.65,y:continentHeight*2,width:continentWidth, height:continentHeight});
-oceaniaNetWork.centerByLogicalPoint(oceniaZoom*1045,oceniaZoom*522);
-var chinaWidth = continentWidth*2;
-var chinaHeight = continentHeight*3;
-var chinaMarleft = continentWidth;
-if(fullscreen)
-{
- chinaWidth = continentWidth*2.5;
- chinaMarleft = continentWidth*0.75;
-}
-$("#main").css({"height":continentHeight*3,"width":chinaWidth,"margin-left": chinaMarleft,"margin-top": 20});
-//$("#main").css({"height":400,"width":500,"margin-left": 100,"margin-top": 20});
-//height:600px;width: 800px;position:absolute;margin-left: 300px;margin-top: 20px
-myChart.resize();
+  //南美
+  southAmericaNetWork.setZoom(zoom);
+  southAmericaNetWork.adjustBounds({x:0,y:continentHeight,width:continentWidth, height:continentHeight});
+  southAmericaNetWork.centerByLogicalPoint(zoom*489,zoom*483);
+  //非洲
+  africaNetWork.setZoom(zoom);
+  africaNetWork.adjustBounds({x:0,y:continentHeight*2,width:continentWidth, height:continentHeight});
+  africaNetWork.centerByLogicalPoint(zoom*715,zoom*421);
+  //亚洲
+  asiaNetWork.setZoom(zoom);
+  asiaNetWork.adjustBounds({x:data.width*0.65,y:0,width:continentWidth, height:continentHeight});
+  asiaNetWork.centerByLogicalPoint(zoom*960,zoom*324);
+  //欧洲
+  europeNetWork.setZoom(zoom);
+  europeNetWork.adjustBounds({x:data.width*0.65,y:continentHeight,width:continentWidth, height:continentHeight});
+  europeNetWork.centerByLogicalPoint(zoom*962,zoom*213);
+  //大洋洲
+  var oceniaZoom = 0.6*(data.width*data.height)/(1680*1050);
+  oceaniaNetWork.setZoom(oceniaZoom);
+  oceaniaNetWork.adjustBounds({x:data.width*0.65,y:continentHeight*2,width:continentWidth, height:continentHeight});
+  oceaniaNetWork.centerByLogicalPoint(oceniaZoom*1045,oceniaZoom*522);
+  var chinaWidth = continentWidth*2;
+  var chinaHeight = continentHeight*3;
+  var chinaMarleft = continentWidth;
+  if(fullscreen)
+  {
+   chinaWidth = continentWidth*2.5;
+   chinaMarleft = continentWidth*0.75;
+  }
+  $("#main").css({"height":continentHeight*3,"width":chinaWidth,"margin-left": chinaMarleft,"margin-top": 20});
+  myChart.resize();
 }
 
 function initContinent()
